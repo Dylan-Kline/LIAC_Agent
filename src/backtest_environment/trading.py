@@ -130,6 +130,9 @@ class TradingEnvironment(gym.Env):
         self.total_return = 0
         self.total_profit = 0
         
+        self.action_dim = 3
+        self.action_radius = int(np.floor(self.action_dim/2))
+        
         # Action mapping between string action and integer action
         self.action_map = {
             "SELL": -1,
@@ -211,6 +214,33 @@ class TradingEnvironment(gym.Env):
         return state
     
     def reset(self, **kwargs):
+        '''
+        Resets the trading environment to its initial state for a new episode.
+
+        Parameters:
+            **kwargs:
+                Arbitrary keyword arguments. Currently unused but can be utilized for future extensions.
+
+        Returns:
+            tuple:
+                state (dict):
+                    The initial state of the environment after reset, containing relevant data such as price and news within the defined window.
+                info (dict):
+                    A dictionary containing detailed information about the initial state, including:
+                        - "symbol" (str): The symbol of the selected asset.
+                        - "asset_type" (str): The type/category of the selected asset.
+                        - "day" (int): The current day index in the simulation.
+                        - "value" (float): The total portfolio value.
+                        - "cash" (float): The available cash balance.
+                        - "position" (int): The number of asset units currently held.
+                        - "ret" (float): The return since the last action (initially 0).
+                        - "date" (str): The current date in 'YYYY-MM-DD' format.
+                        - "price" (float): The current price of the asset.
+                        - "discount" (float): The current discount factor.
+                        - "total_profit" (float): The total profit percentage relative to the initial amount.
+                        - "total_return" (float): The cumulative discounted return.
+                        - "action" (str): The last action taken ("HOLD" upon reset).
+        '''
         self.day = self.init_day
         self.value = self.initial_amount
         self.cash = self.initial_amount
@@ -244,16 +274,55 @@ class TradingEnvironment(gym.Env):
         return state, info
     
     def eval_buy_position(self, price):
-        # evaluate buy position
-        # price * position + price * position * transaction_cost_pct <= cash
-        # position <= cash / price / (1 + transaction_cost_pct)
+        '''
+        Evaluates the maximum number of asset units that can be purchased given the current cash balance and transaction costs.
+
+        Parameters:
+            price (float):
+                The current price of the selected asset.
+
+        Returns:
+            int:
+                The maximum number of units that can be bought without exceeding the available cash, accounting for transaction costs.
+                Calculated as the floor of (cash) divided by (price * (1 + transaction_cost_pct)).
+        '''
         return int(np.floor(self.cash / price / (1 + self.transaction_cost_pct)))
 
     def eval_sell_position(self):
-        # evaluate sell position
+        '''
+        Evaluates the maximum number of asset units that can be sold based on the current position holdings.
+
+        Parameters:
+            None
+
+        Returns:
+            int:
+                The total number of asset units currently held, representing the maximum sellable quantity.
+        '''
         return int(self.position)
     
     def buy(self, price, amount=1):
+        '''
+        Executes a buy action, purchasing a calculated number of asset units based on the available cash and transaction costs.
+
+        Parameters:
+            price (float):
+                The current price of the selected asset.
+            amount (int, optional):
+                A scaling factor determining the aggressiveness of the buy action.
+                Defaults to 1.
+
+        Returns:
+            None
+
+        Behavior:
+            - Determines the evaluable buy position using `eval_buy_position`.
+            - Calculates the actual number of units to buy based on the `amount` and `action_radius`.
+            - Updates the cash balance by subtracting the total cost of the purchase, including transaction costs.
+            - Increases the asset position by the number of units bought.
+            - Updates the total portfolio value based on the new position.
+            - Sets the last action to "BUY" if any units were purchased; otherwise, sets it to "HOLD".
+        '''
 
         # evaluate buy position
         eval_buy_postion = self.eval_buy_position(price)
@@ -270,6 +339,27 @@ class TradingEnvironment(gym.Env):
         self.value = self.current_value(price)
 
     def sell(self, price, amount=-1):
+        '''
+        Executes a sell action, selling a calculated number of asset units based on the current holdings.
+
+        Parameters:
+            price (float):
+                The current price of the selected asset.
+            amount (int, optional):
+                A scaling factor determining the aggressiveness of the sell action.
+                Defaults to -1.
+
+        Returns:
+            None
+
+        Behavior:
+            - Determines the evaluable sell position using `eval_sell_position`.
+            - Calculates the actual number of units to sell based on the `amount` and `action_radius`.
+            - Updates the cash balance by adding the proceeds from the sale, minus transaction costs.
+            - Decreases the asset position by the number of units sold.
+            - Updates the total portfolio value based on the new position.
+            - Sets the last action to "SELL" if any units were sold; otherwise, sets it to "HOLD".
+        '''
 
         # evaluate sell position
         eval_sell_postion = self.eval_sell_position()
@@ -286,11 +376,64 @@ class TradingEnvironment(gym.Env):
         self.value = self.current_value(price)
 
     def hold_on(self, price, amount=0):
+        '''
+        Executes a hold action, maintaining the current asset position without making any transactions.
+
+        Parameters:
+            price (float):
+                The current price of the selected asset.
+            amount (int, optional):
+                An unused parameter included for consistency with other action methods.
+                Defaults to 0.
+
+        Returns:
+            None
+
+        Behavior:
+            - Sets the last action to "HOLD".
+            - Updates the total portfolio value based on the current position and price.
+        '''
         self.action = "HOLD"
         self.value = self.current_value(price)
     
     def step(self, action: int = 0):
+        '''
+        Advances the environment by one time step based on the agent's action, updating the state, calculating rewards, and determining episode termination.
 
+        Parameters:
+            action (int, optional):
+                The action chosen by the reinforcement learning agent.
+                - Positive integers (>0): Represent buy actions, with the magnitude indicating the aggressiveness.
+                - Negative integers (<0): Represent sell actions, with the magnitude indicating the aggressiveness.
+                - Zero (0): Represents a hold action.
+                Defaults to 0.
+
+        Returns:
+            tuple:
+                next_state (dict):
+                    The updated state after executing the action, containing relevant data such as price and news within the defined window.
+                reward (float):
+                    The immediate reward obtained from taking the action, calculated as the percentage change in portfolio value.
+                done (bool):
+                    Indicates whether the episode has ended (True) or not (False).
+                truncated (bool):
+                    Indicates whether the episode was truncated (True) or not (False). Always mirrors the value of `done` in the current implementation.
+                info (dict):
+                    A dictionary containing detailed information about the current state, including:
+                        - "symbol" (str): The symbol of the selected asset.
+                        - "asset_type" (str): The type/category of the selected asset.
+                        - "day" (int): The current day index in the simulation.
+                        - "value" (float): The total portfolio value.
+                        - "cash" (float): The available cash balance.
+                        - "position" (int): The number of asset units currently held.
+                        - "ret" (float): The return since the last action.
+                        - "date" (str): The current date in 'YYYY-MM-DD' format.
+                        - "price" (float): The current price of the asset.
+                        - "discount" (float): The current discount factor.
+                        - "total_profit" (float): The total profit percentage relative to the initial amount.
+                        - "total_return" (float): The cumulative discounted return.
+                        - "action" (str): The last action taken ("BUY", "SELL", or "HOLD").
+        '''
         pre_value = self.value
 
         if action > 0:
