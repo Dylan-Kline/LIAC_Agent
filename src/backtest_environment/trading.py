@@ -5,9 +5,6 @@ import numpy as np
 import gym
 
 class TradingEnvironment(gym.Env):
-    # if the dataset is set to none and the mode = production, have it fetch real-time data for state
-    # if dates are none, we could also have it use real time data
-    
     def __init__(self,
                  mode: str = "train",
                  dataset: Any = None,
