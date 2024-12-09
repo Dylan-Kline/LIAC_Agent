@@ -1,0 +1,9 @@
+output_format:
+  text: |
+    You should ONLY return a valid YAML object. You MUST FOLLOW the YAML output format as follows:
+    ```yaml
+    output:
+      analysis: "Analysis that you provided."
+      action: "BUY"
+      reasoning: "Reasoning about the decision result that you provided."
+    ```

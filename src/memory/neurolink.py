@@ -150,11 +150,11 @@ class MemoryInterface:
             f"memory_type = {memory_type} should be one of ['market_intelligence', 'low_level_reflection', 'high_level_reflection']."
 
         if memory_type == "market_intelligence":
-            return self.market_intelligence_memorys[symbol]
+            return self.market_intelligence_memories[symbol]
         elif memory_type == "low_level_reflection":
-            return self.low_level_reflection_memorys[symbol]
+            return self.low_level_reflection_memories[symbol]
         elif memory_type == "high_level_reflection":
-            return self.high_level_reflection_memorys[symbol]
+            return self.high_level_reflection_memories[symbol]
         
     def _get_recent_history(self, memory_type: str, symbol: str) -> deque:
         """
