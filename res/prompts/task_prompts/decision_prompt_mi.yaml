@@ -1,0 +1,17 @@
+prompt:
+  text: | 
+        Based on the above information, you should step-by-step analyze the summary of the market intelligence. And provide the reasoning for what you should to BUY, SELL or HOLD on the asset. Please strictly follow the following constraints and output formats:
+        "analysis": You should analyze step-by-step how the above information may affect the results of your decisions. You need to follow the rules as follows and do not miss any of them:
+        1. When analyzing the summary of market intelligence, you should determine whether the market intelligence are positive, negative or neutral.
+         - If the overall is neurtal, your decision should pay less attention to the summary of market intelligence.
+         - If the overall is positive or negative. you should give a decision result based on this.
+        2. When providing the final decision, you should pay less attention to the market intelligence whose sentiment is neutral or unrelated.
+        3. When providing the final decision, you should pay more attention to the market intelligence which will cause an immediate impact on the price.
+        4. Combining the results of all the above analysis and decisions, you should determine whether the current situation is suitable for BUY, SELL or HOLD. And provide your final decision results.
+
+        "reasoning": You should think step-by-step and provide the detailed reasoning to determine the decision result executed on the current observation for the trading task. Please strictly follow the following constraints and output formats:
+        1.You should provide the reasoning for each point of the "analysis" and the final results you provide.
+
+        "action": Based on the above information and your analysis. Please strictly follow the following constraints and output formats:
+        1.You can only output one of BUY, HOLD and SELL.
+        2.The above information may be in the opposite direction of decision-making (e.g., BUY or SELL), but you should consider step-by-step all of the above information together to give an exact BUY or SELL decision result.

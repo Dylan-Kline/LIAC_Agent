@@ -1,0 +1,2 @@
+state_description:
+  text: "For the current situation, the Close price of the asset is {{asset_price}}, your current POSITION is {{asset_position}}, and your available CASH is {{asset_cash}}. Your total profit from the opening of the position is {{asset_profit}}, and your return yesterday was {{asset_return}}."

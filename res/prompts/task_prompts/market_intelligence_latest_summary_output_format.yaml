@@ -1,0 +1,15 @@
+market_intelligence_latest_summary_output_format:
+  text: |
+    You should ONLY return a valid YAML object. You MUST FOLLOW the YAML output format as follows:
+    ```yaml
+    output:
+      analysis:
+        - ID: 000001 - Analysis that you provided for market intelligence 000001.
+        - ID: 000002 - Analysis that you provided for market intelligence 000002.
+        # Add more analysis entries as needed
+      summary: "The summary that you provided."
+      query:
+        short_term_query: "Query text that you provided for SHORT-TERM."
+        medium_term_query: "Query text that you provided for MEDIUM-TERM."
+        long_term_query: "Query text that you provided for LONG-TERM."
+    ```
