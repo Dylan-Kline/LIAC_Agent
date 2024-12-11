@@ -1,12 +1,13 @@
 latest_market_intelligence_summary_template:
-  - role: "system"
-    content: |
-      {{system_content}}
-  - role: "user"
-    content: |
-      The following market intelligence (e.g., news, financial reports) contains latest (i.e., today) information related to {{asset_symbol}}, including the corresponding dates, headlines, and contents, with each item distinguished by a unique ID. Furthermore, if the day is not closed for trading, the section also provides the open, high, low, close, and close prices.
-      Latest market intelligence and prices are as follows:
-      {{latest_market_intelligence}}
-      {{market_intelligence_effects}}
-      {{market_intelligence_latest_summary_prompt}}
-      {{market_intelligence_latest_summary_output_format}}
+  messages:
+    - role: "system"
+      content: |
+        {{system_content}}
+    - role: "user"
+      content: |
+        The following market intelligence (e.g., news, financial reports) contains latest (i.e., today) information related to {{asset_symbol}}, including the corresponding dates, headlines, and contents, with each item distinguished by a unique ID. Furthermore, if the day is not closed for trading, the section also provides the open, high, low, close, and close prices.
+        Latest market intelligence and prices are as follows:
+        {{latest_market_intelligence}}
+        {{market_intelligence_effects}}
+        {{market_intelligence_latest_summary_prompt}}
+        {{market_intelligence_latest_summary_output_format}}
