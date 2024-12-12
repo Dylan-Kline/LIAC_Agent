@@ -5,7 +5,7 @@ messages:
   - role: "user"
     content: |
       {{market_intelligence_task_description}}
-      The following market intelligence (e.g., news, financial reports) contains past (i.e., before today) information related to {{asset_symbol}}, including the corresponding dates, headlines, and contents, with each item distinguished by a unique ID. Furthermore, if the day is not closed for trading, the section also provides the open, high, low, close, and close prices.
+      The following market intelligence (e.g., news, financial reports) contains past (i.e., before today) information related to {{asset_symbol}}, including the corresponding dates, headlines, and contents, with each item distinguished by a unique ID. Furthermore, if the day is not closed for trading, the section also provides the open, high, low, and close prices.
       Past market intelligence and prices are as follows:
       {{past_market_intelligence}}
       {{market_intelligence_effects}}
