@@ -1,0 +1,1 @@
+from .fmp_fetcher import FMPCryptoNewsFetcher

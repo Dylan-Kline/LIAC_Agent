@@ -8,6 +8,7 @@ __pycache__/
 
 *.csv
 *.env
+workdir/
 
 # Distribution / packaging
 .Python
