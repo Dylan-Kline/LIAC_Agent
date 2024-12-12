@@ -143,6 +143,28 @@ class YamlPrompt():
         
         return [system_message] + user_messages
     
+    def extract_yaml(self,
+                     response: str) -> str:
+        """
+        Extracts the YAML content enclosed within ```yaml and ``` from the response string.
+
+        :param response: The full response string containing YAML code block.
+        :return: Extracted YAML string.
+        :raises ValueError: If no YAML code block is found.
+        """
+        import re
+        pattern = r'```yaml\s*\n(.*?)```'
+        
+        # Search for the pattern with DOTALL to include newlines
+        match = re.search(pattern, response, flags=re.DOTALL | re.IGNORECASE)
+        
+        if match:
+            yaml_content = match.group(1).strip()
+            print(yaml_content)
+            return yaml_content
+        else:
+            raise ValueError("No YAML code block found in the response.")
+
     def get_response(self,
                      provider,
                      messages,
@@ -153,6 +175,9 @@ class YamlPrompt():
                                                     model=model)
         print("response from llm model {}: \ninfo: {}\nresponse: \n{}".format(model, info, response))
         
+        yaml_content = self.extract_yaml(response=response)
+        response_dict = yaml.safe_load(yaml_content)
+        print(response_dict)
         
                 
         
