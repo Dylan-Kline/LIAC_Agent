@@ -15,6 +15,6 @@ market_intelligence_effects:
        - Favorable: Negative market intelligence act as a market correction mechanism, provide crucial investment information, ultimately contributing to the long-term health of the market and the asset prices.
        - Unfavorable: Negative market intelligence lead to investor panic and a short-term decline in stock prices, as well as cause long-term damage to a company's reputation and brand, adversely contributing to a decline in asset prices.
      - NEUTRAL market intelligence describes an event that has an uncertain impact on the asset price with no apparent POSITIVE or NEGATIVE bias.
-     - If the market intelligence is RELATED to the $$asset_name$$, but it's not clear whether the sentiment is positive or negative. Then you should consider it as NEUTRAL.
+     - If the market intelligence is RELATED to the {{asset_name}}, but it's not clear whether the sentiment is positive or negative. Then you should consider it as NEUTRAL.
     4. Market intelligence related to the asset collaborators or competitors may influence the asset prices.
     5. Because the past market intelligence has a lower effect on the present, you should pay MORE attention to the latest market intelligence.

@@ -3,10 +3,14 @@ import os
 import backoff
 import yaml
 import abc
+from copy import deepcopy
 from typing import Dict, Any, List
 from jinja2 import Environment, BaseLoader, Template, exceptions as jinja2_exceptions
 
+from src.memory import MemoryInterface
+from src.asset import ASSET
 from src.provider.provider import encode_image
+from src.utils.file_utils import read_resource_file
 
 class YamlPrompt():
     '''General prompt class for all prompt templates in YAML format.'''
@@ -30,30 +34,35 @@ class YamlPrompt():
         '''
         if not os.path.exists(self.template_path):
              raise FileNotFoundError(f"Template file not found: {self.template_path}")
-         
-        with open(self.template_path, 'r') as file:
-            try:
-                template = yaml.safe_load(file)
-                if 'messages' not in self.template:
-                    raise ValueError("Main template YAML must contain a 'messages' key.")
-                return template
-            except yaml.YAMLError as e:
-                raise ValueError(f'Error parsing YAML file: {e}')
+        
+        raw_template = read_resource_file(self.template_path)
+        print(raw_template)
+        try:
+            template = yaml.safe_load(raw_template)
+            print(template)
+            if 'messages' not in template:
+                raise ValueError("Main template YAML must contain a 'messages' key.")
+            return template
+        except yaml.YAMLError as e:
+            raise ValueError(f'Error parsing YAML file: {e}')
             
-    def _get_placeholders(self) -> List[str]:
+    def _get_placeholders(self) -> dict[set]:
         """
         Extracts all unique placeholders from the main template's messages.
 
-        :return: List of placeholder names.
+        :return: Dict of placeholder names for each role.
         """
         import re
-        placeholders = set()
+        placeholders = dict()
         pattern = re.compile(r"\{\{\s*(\w+)\s*\}\}")
         for message in self.template['messages']:
+            placeholds = list()
+            role = message.get('role', '')
             content = message.get('content', '')
             matches = pattern.findall(content)
-            placeholders.update(matches)
-        return list(placeholders)
+            placeholds.append(matches)
+            placeholders[role] = placeholds
+        return placeholders
     
     def render_template(self, template_str: str, params: Dict[str, Any]) -> str:
         """
@@ -66,17 +75,89 @@ class YamlPrompt():
         try:
             template = self.env.from_string(template_str)
             rendered = template.render(**params).strip()
+            print(rendered)
             return rendered
         except jinja2_exceptions.TemplateError as e:
             raise ValueError(f"Error rendering template: {e}")
-    
-    @abc.abstractmethod
-    def assemble_prompt(
+        
+    def _convert_to_params(self,
+                           *args,
+                           **kwargs) -> Dict:
+        raise NotImplementedError
+
+    def assemble_messages(
         self,
         *args,
-        template: Any = None,
         params: Dict = None,
         **kwargs,
     ) -> List[str]:
-        pass
         
+        # Get placeholders for asset and sub-prompt info
+        placeholders = self._get_placeholders()
+        
+        # Create the system message
+        system_message_content = ""
+        for placeholder_list in placeholders['system']:
+            for placeholder in placeholder_list:
+                if ASSET.check_task_prompts(name=placeholder):
+                    
+                    # Fetch and render the sub-prompt
+                    sub_prompt_content = ASSET.get_task_prompts(name=placeholder)
+                    rendered_sub_prompt = self.render_template(template_str=sub_prompt_content,
+                                                            params=params)
+                    system_message_content += rendered_sub_prompt
+        
+        system_message = {
+            "role": "system",
+            "content": [
+                {
+                    "type": "text",
+                    "text": system_message_content
+                }
+            ]
+        }
+        
+        # Create the user message text message
+        user_message_content = ""
+        user_messages = []
+        for placeholder_list in placeholders['user']:
+            for placeholder in placeholder_list:
+                if ASSET.check_task_prompts(name=placeholder):
+                    
+                    # Fetch and render the sub-prompt
+                    sub_prompt_content = ASSET.get_task_prompts(name=placeholder)
+                    rendered_sub_prompt = self.render_template(template_str=sub_prompt_content,
+                                                            params=params)
+                    user_message_content += rendered_sub_prompt
+        
+        user_message = {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": user_message_content
+                }
+            ]
+        }
+        user_messages.append(user_message)
+        
+        return [system_message] + user_messages
+    
+    def get_response(self,
+                     provider,
+                     messages,
+                     model = None,
+                     check_keys=["action", "reasoning"]):
+        
+        response, info = provider.create_completion(messages=messages, 
+                                                    model=model)
+        print("response from llm model {}: \ninfo: {}\nresponse: \n{}".format(model, info, response))
+        
+        
+                
+        
+        
+        
+        
+
+    

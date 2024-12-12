@@ -1,18 +1,17 @@
-decision_template:
-  messages:
-    - role: "system"
-      content: |
-        {{system_content}}
-    - role: "user"
-      content: |
-        {{decision_task_description}}
-        {{decision_trader_preference}}
-        The following are summaries of the latest (i.e., today) and past (i.e., before today) market intelligence (e.g., news, financial reports) you've provided.
-        The following is a summary from your assistant of the past market intelligence:
-        {{past_market_intelligence_summary}}
-        The following is a summary from your assistant of the latest market intelligence:
-        {{latest_market_intelligence_summary}}
-        {{market_intelligence_effects}}
-        {{decision_state_description}}
-        {{decision_prompt_mi}}
-        {{decision_output_format}}
+messages:
+  - role: "system"
+    content: |
+      {{system_content}}
+  - role: "user"
+    content: |
+      {{decision_task_description}}
+      {{decision_trader_preference}}
+      The following are summaries of the latest (i.e., today) and past (i.e., before today) market intelligence (e.g., news, financial reports) you've provided.
+      The following is a summary from your assistant of the past market intelligence:
+      {{past_market_intelligence_summary}}
+      The following is a summary from your assistant of the latest market intelligence:
+      {{latest_market_intelligence_summary}}
+      {{market_intelligence_effects}}
+      {{decision_state_description}}
+      {{decision_prompt_mi}}
+      {{decision_output_format}}
