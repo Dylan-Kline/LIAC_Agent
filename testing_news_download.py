@@ -25,7 +25,7 @@ def main():
 
     type = "FMPCryptoNewsDownloader"
     token = None
-    start_date = "2019-01-01"
+    start_date = "2021-12-08"
     end_date = "2024-12-12"
     interval = "1d"
     delay = 1
@@ -37,7 +37,7 @@ def main():
         start_date=start_date,
         end_date=end_date,
         interval=interval,
-        max_pages=30000,
+        max_pages=3891,
         cryptos_path=cryptos_path,
         workdir=workdir,
         tag=tag,

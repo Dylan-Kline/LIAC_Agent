@@ -82,7 +82,7 @@ class FMPCryptoNewsFetcher:
                             bar_format="Download {} News:".format(crypto) + "{bar:50}{percentage:3.0f}%|{elapsed}/{remaining}{postfix}"):
                 
                 # Check if page number has already been loaded and if so dont request it again
-                page_path = os.path.join(self.workdir, crypto, "page{:04d}.csv".format(page))
+                page_path = os.path.join(self.workdir, crypto, "page{:06d}.csv".format(page))
                 if os.path.exists(page_path):
                     chunk_news = pd.read_csv(page_path)
                 else:
@@ -123,7 +123,7 @@ class FMPCryptoNewsFetcher:
                     chunk_news.to_csv(page_path, index=False)
                     
                 crypto_news = pd.concat([crypto_news, chunk_news], axis=0)
-            crypto_news.to_csv(os.path.join(self.workdir, "{}_latest.csv".format(crypto)), index=False)
+            crypto_news.to_csv(os.path.join(self.workdir, "{}.csv".format(crypto)), index=False)
                
                     
                 
