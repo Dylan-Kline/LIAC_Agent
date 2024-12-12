@@ -10,3 +10,4 @@
 ☐ Create a script to run the agent on a specific asset such as BTCUSD
 ☐ Create a fastapi function that uses an API key to then call a function that grabs the latest action and reasoning the agents memory for the specific asset type
     ☐ Or perhaps have the function grab all of the latest reasoning and actions for each supported cryptocurrency and return as dict
+☐ Add validation for LLM responses (making sure they follow the output formatting exactly, any deviations should result in trying to get a response again with the same informtion)
