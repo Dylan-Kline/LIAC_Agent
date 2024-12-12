@@ -4,3 +4,9 @@
 ☐ Create a basic website to showcase the model on bitcoin
     ☐ Implement a simple fastapi endpoint for the javascript to call
         ☐ Create an API key requirement so it can only be called using a .env file
+☐ Create training and validation dataset
+☐ Get training data and process it
+☐ set up production dataset
+☐ Create a script to run the agent on a specific asset such as BTCUSD
+☐ Create a fastapi function that uses an API key to then call a function that grabs the latest action and reasoning the agents memory for the specific asset type
+    ☐ Or perhaps have the function grab all of the latest reasoning and actions for each supported cryptocurrency and return as dict
