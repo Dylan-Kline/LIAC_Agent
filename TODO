@@ -1,1 +1,6 @@
 ☐ Look into if using a more intelligent model to evaluate reflections made by chatgpt 4o could improve performance.
+☐ Implement a prompt asking the model to consider a scenario where they are holding the asset and where they are not holding the asset. 
+    ☐  Update the structured YAML output format to have two diffrent keys "holding" and "not_holding", each with their separate reasoning and action.
+☐ Create a basic website to showcase the model on bitcoin
+    ☐ Implement a simple fastapi endpoint for the javascript to call
+        ☐ Create an API key requirement so it can only be called using a .env file
