@@ -1,5 +1,13 @@
-{
+{   
+    "BTC-USDT": {
+        "company_name": "Bitcoin",
+        "symbol": "BTC-USDT",
+        "exchange": "OKX",
+        "description": "BTC/USDT represents the exchange rate between Bitcoin (BTC) and Tether (USDT). Bitcoin is the first and most widely recognized cryptocurrency, often considered a digital alternative to traditional stores of value. In this trading pair, BTC is the base currency and USDT, a stablecoin pegged to the US Dollar, is the quote currency. The BTC/USDT exchange rate shows how many units of USDT are required to purchase one Bitcoin. This rate fluctuates constantly due to factors such as market demand, investor sentiment, macroeconomic conditions, and regulatory developments. By trading BTC against a stablecoin like USDT, traders and investors can more easily gauge Bitcoin’s performance relative to the dollar without directly converting into fiat currency. The BTC/USDT pair is one of the most actively traded pairs in the cryptocurrency market, reflecting Bitcoin’s prominence and ongoing influence on the broader crypto ecosystem.",
+        "sector": "Financial Services"
+    },
     "ETHUSD": {
+        "company_name": "Ethereum",
         "symbol": "ETHUSD",
         "exchange": "OKX",
         "description": "ETH/USD refers to the exchange rate between Ethereum (ETH) and the United States Dollar (USD). Ethereum is a prominent cryptocurrency, known for its versatile blockchain platform that enables smart contracts and decentralized applications (DApps). In the pair ETH/USD, Ethereum is the base currency, and the US Dollar is the quote currency. The value of ETH/USD indicates how many US dollars are needed to purchase one Ethereum. This exchange rate fluctuates constantly, driven by factors such as supply and demand dynamics in cryptocurrency markets, technological developments within the Ethereum network, regulatory news, and broader economic factors that influence the value of the US dollar. Traders and investors in the cryptocurrency market closely watch this pair, as it provides insights into the strength and valuation of Ethereum relative to a stable and widely accepted fiat currency like the US dollar. The volatility of ETH/USD can be significant, reflecting the often rapid changes in sentiment and valuation in the crypto market.",

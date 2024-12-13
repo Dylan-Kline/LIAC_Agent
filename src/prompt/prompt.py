@@ -177,8 +177,12 @@ class YamlPrompt():
         
         yaml_content = self.extract_yaml(response=response)
         response_dict = yaml.safe_load(yaml_content)
-        print(response_dict)
+        print("response_dict: \n{}\n".format(response_dict))
         
+        for key in check_keys:
+            if key not in response_dict["output"]:
+                raise KeyError(f"Key {key} not in response: {response_dict}")
+        return response_dict
                 
         
         
