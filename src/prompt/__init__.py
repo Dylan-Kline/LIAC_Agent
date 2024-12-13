@@ -1,1 +1,2 @@
 from .prompt import YamlPrompt
+from .latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt

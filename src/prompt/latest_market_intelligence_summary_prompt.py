@@ -11,7 +11,8 @@ from src.provider import EmbeddingProvider
 from src.query import DiverseQuery
 
 class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
-    def __init__(self, template_path: str) -> None:
+    def __init__(self, model, template_path: str) -> None:
+        self.model = model
         super(LatestMarketIntelligenceSummaryPrompt, self).__init__(template_path)
         
     def convert_to_params(self,
@@ -87,7 +88,7 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
         return result_params
         
     @backoff.on_exception(backoff.constant, (KeyError), max_tries=3, interval=10)
-    def get_response_dict(self,
+    def get_response(self,
                           provider,
                           model,
                           messages,
@@ -98,7 +99,7 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
             "summary"
         ]
 
-        response_dict = super(LatestMarketIntelligenceSummaryPrompt, self).get_response_dict(provider=provider,
+        response_dict = super(LatestMarketIntelligenceSummaryPrompt, self).get_response(provider=provider,
                                                                                         model=model,
                                                                                         messages=messages,
                                                                                         check_keys=check_keys)
@@ -176,8 +177,6 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
             memory: MemoryInterface = None,
             provider: EmbeddingProvider = None,
             diverse_query: DiverseQuery = None,
-            exp_path: str = None,
-            save_dir: str = None,
             **kwargs):
         
         print(">" * 50 + f"{info['date']} - Running Latest Market Intelligence Summary Trading Prompt" + ">" * 50)
@@ -189,8 +188,10 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
                                              provider=provider,
                                              diverse_query=diverse_query)
         message = self.assemble_messages(params=task_params)
-        response_dict = self.get_response_dict(provider=provider,
+        response_dict = self.get_response(provider=provider,
+                                               model=self.model,
                                                messages=message)
+        response_dict = response_dict['output']
         query = response_dict["query"]
         summary = response_dict["summary"]
         

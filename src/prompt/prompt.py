@@ -106,6 +106,8 @@ class YamlPrompt():
                     rendered_sub_prompt = self.render_template(template_str=sub_prompt_content,
                                                             params=params)
                     system_message_content += rendered_sub_prompt
+                elif placeholder in params:
+                    system_message_content += params[placeholder]
         
         system_message = {
             "role": "system",
@@ -129,6 +131,8 @@ class YamlPrompt():
                     rendered_sub_prompt = self.render_template(template_str=sub_prompt_content,
                                                             params=params)
                     user_message_content += rendered_sub_prompt
+                elif placeholder in params:
+                    user_message_content += params[placeholder]
         
         user_message = {
             "role": "user",
