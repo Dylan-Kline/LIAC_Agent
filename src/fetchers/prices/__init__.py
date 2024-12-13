@@ -1,0 +1,1 @@
+from .ccxt_fetchers import CCXTPriceFetcher

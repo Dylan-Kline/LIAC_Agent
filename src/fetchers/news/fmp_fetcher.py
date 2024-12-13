@@ -21,6 +21,7 @@ class FMPCryptoNewsFetcher:
                  api_key: str = None,
                  delay: int = 1,
                  max_pages: int = None,
+                 exchange_name: str = 'ok',
                  start_date: str = "2023-04-01",
                  end_date: str = "2023-04-01",
                  interval: str = "1d",
