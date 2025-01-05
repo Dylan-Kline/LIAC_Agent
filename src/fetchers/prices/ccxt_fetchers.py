@@ -2,7 +2,6 @@ import os
 import pandas as pd
 from tqdm.auto import tqdm
 import time
-from pandas_market_calendars import get_calendar
 from urllib.request import urlopen
 import certifi
 import json
@@ -68,6 +67,7 @@ class CCXTPriceFetcher:
         if not hasattr(ccxt, exchange_name):
             raise ValueError(f"Exchange {exchange_name} is not supported by ccxt.")
         exchange_class = getattr(ccxt, exchange_name)
+        print(str(exchange_class))
         self.exchange = exchange_class({'enableRateLimit': True})
         
     def _init_cryptos(self):
@@ -108,6 +108,7 @@ class CCXTPriceFetcher:
                                              timeframe=self.interval,
                                              since=since,
                                              limit=self.limit)
+            
             if not data:
                 break
             

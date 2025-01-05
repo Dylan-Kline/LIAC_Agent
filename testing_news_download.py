@@ -2,7 +2,6 @@ import os
 import sys
 from pathlib import Path
 import argparse
-from mmengine.config import Config, DictAction
 import multiprocessing
 from src.fetchers.news import FMPCryptoNewsFetcher
 
@@ -25,8 +24,8 @@ def main():
 
     type = "FMPCryptoNewsDownloader"
     token = None
-    start_date = "2021-12-08"
-    end_date = "2024-12-12"
+    start_date = "2023-06-09"
+    end_date = "2025-01-03"
     interval = "1d"
     delay = 1
     cryptos_path = "configs/_asset_lists_/cryptos.txt"

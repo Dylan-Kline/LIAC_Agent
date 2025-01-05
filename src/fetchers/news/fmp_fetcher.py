@@ -2,7 +2,6 @@ import os
 import pandas as pd
 from tqdm.auto import tqdm
 import time
-from pandas_market_calendars import get_calendar
 from urllib.request import urlopen
 import certifi
 import json

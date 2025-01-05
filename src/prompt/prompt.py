@@ -75,7 +75,6 @@ class YamlPrompt():
         try:
             template = self.env.from_string(template_str)
             rendered = template.render(**params).strip()
-            print(rendered)
             return rendered
         except jinja2_exceptions.TemplateError as e:
             raise ValueError(f"Error rendering template: {e}")
@@ -108,6 +107,7 @@ class YamlPrompt():
                     system_message_content += rendered_sub_prompt
                 elif placeholder in params:
                     system_message_content += params[placeholder]
+                    # may need to convert the params value to a str if its a price
         
         system_message = {
             "role": "system",

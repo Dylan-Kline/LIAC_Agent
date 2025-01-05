@@ -14,13 +14,13 @@ sys.path.append(root)
 
 def main():
     # Configuration
-    exchange_name = "okx"     
+    exchange_name = "coinbase"     
     start_date = "2023-06-09"
-    end_date = "2024-12-12"
+    end_date = "2025-01-03"
     interval = "1d"
     workdir = "workdir"
-    tag = "okx_data"
-    cryptos_path = "configs/_asset_lists_/okx_cryptos.txt"
+    tag = f"{exchange_name}_data"
+    cryptos_path = f"configs/_asset_lists_/{exchange_name}_cryptos.txt"
 
     # Initialize the price fetcher
     fetcher = CCXTPriceFetcher(

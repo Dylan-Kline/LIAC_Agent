@@ -188,6 +188,8 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
                                              provider=provider,
                                              diverse_query=diverse_query)
         message = self.assemble_messages(params=task_params)
+        print(message)
+        exit()
         response_dict = self.get_response(provider=provider,
                                                model=self.model,
                                                messages=message)
