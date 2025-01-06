@@ -15,7 +15,7 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
         self.model = model
         super(LatestMarketIntelligenceSummaryPrompt, self).__init__(template_path)
         
-    def convert_to_params(self,
+    def _convert_to_params(self,
                           state: Dict,
                           info: Dict,
                           params: Dict,
@@ -181,7 +181,7 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
         
         print(">" * 50 + f"{info['date']} - Running Latest Market Intelligence Summary Trading Prompt" + ">" * 50)
         
-        task_params = self.convert_to_params(state=state,
+        task_params = self._convert_to_params(state=state,
                                              info=info,
                                              params=params,
                                              memory=memory,

@@ -65,7 +65,7 @@ class PastMarketIntelligenceSummaryPrompt(YamlPrompt):
         
         print(">" * 50 + f"{info['date']} - Running Past Market Intelligence Summary Prompt" + ">" * 50)
         
-        task_params = self.convert_to_params(state=state,
+        task_params = self._convert_to_params(state=state,
                                              info=info,
                                              params=params,
                                              memory=memory,

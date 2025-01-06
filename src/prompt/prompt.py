@@ -93,20 +93,26 @@ class YamlPrompt():
         
         # Get placeholders for asset and sub-prompt info
         placeholders = self._get_placeholders()
-        
+
         # Create the system message
-        system_message_content = ""
+        system_message_content = self.template["messages"][0].get('content', '')
         for placeholder_list in placeholders['system']:
             for placeholder in placeholder_list:
+
+                placeholder_replaced = "{{" + f"{placeholder}" + "}}"
+
                 if ASSET.check_task_prompts(name=placeholder):
                     
                     # Fetch and render the sub-prompt
                     sub_prompt_content = ASSET.get_task_prompts(name=placeholder)
                     rendered_sub_prompt = self.render_template(template_str=sub_prompt_content,
                                                             params=params)
-                    system_message_content += rendered_sub_prompt
+                    system_message_content = system_message_content.replace(placeholder_replaced, 
+                                                   rendered_sub_prompt)
+                    
                 elif placeholder in params:
-                    system_message_content += params[placeholder]
+                    system_message_content = system_message_content.replace(placeholder_replaced,
+                                                                            params[placeholder])
                     # may need to convert the params value to a str if its a price
         
         system_message = {
@@ -120,20 +126,27 @@ class YamlPrompt():
         }
         
         # Create the user message text message
-        user_message_content = ""
+        user_message_content = self.template['messages'][1].get('content', '')
         user_messages = []
         for placeholder_list in placeholders['user']:
             for placeholder in placeholder_list:
+
+                placeholder_replaced = "{{" + f"{placeholder}" + "}}"
+
                 if ASSET.check_task_prompts(name=placeholder):
                     
                     # Fetch and render the sub-prompt
                     sub_prompt_content = ASSET.get_task_prompts(name=placeholder)
                     rendered_sub_prompt = self.render_template(template_str=sub_prompt_content,
                                                             params=params)
-                    user_message_content += rendered_sub_prompt
+                    user_message_content = user_message_content.replace(placeholder_replaced,
+                                                                        rendered_sub_prompt)
                 elif placeholder in params:
-                    user_message_content += params[placeholder]
+                    user_message_content = user_message_content.replace(placeholder_replaced,
+                                                                        params[placeholder])
         
+        print(user_message_content)
+        exit()
         user_message = {
             "role": "user",
             "content": [
