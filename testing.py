@@ -1,6 +1,7 @@
 from src.utils.file_utils import *
 from src.prompt.latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt
 from src.prompt.past_market_intelligence_summary_prompt import PastMarketIntelligenceSummaryPrompt
+from src.prompt.decision_prompt import DecisionPrompt
 from src.provider.provider import OpenAIProvider
 
 import os
@@ -13,9 +14,13 @@ load_dotenv(verbose=True)
 # print(template)
 # print(type(template))
 
-template_path = "res/prompts/templates/latest_market_intelligence_summary.yaml"
-lmi_prompt = LatestMarketIntelligenceSummaryPrompt(model="gpt-4o",
-                                                        template_path=template_path)
+#template_path = "res/prompts/templates/latest_market_intelligence_summary.yaml"
+template_path = "res/prompts/templates/decision_template.yaml"
+# prompt = LatestMarketIntelligenceSummaryPrompt(model="gpt-4o",
+#                                                         template_path=template_path)
+prompt = DecisionPrompt(model="gpt-4o",
+                        template_path=template_path)
+
 params = dict()
 params["past_market_intelligence"] = "test past market intelligence string"
 params["asset_symbol"] = "BTC-USD"
@@ -23,15 +28,22 @@ params["asset_name"] = "Bitcoin"
 params["asset_exchange"] = "coinbase"
 params["asset_sector"] = "cryptocurrency"
 params["asset_description"] = "bitcoin is a coin"
+params["trader_preference"] = "aggressive"
+params["past_market_intelligence_summary"] = "No past market intelligence summary."
+params["latest_market_intelligence_summary"] = "No latest market intelligence summary."
 state = dict()
 state["price"] = pd.DataFrame()
 state["news"] = pd.DataFrame()
 info = dict()
+info['price'] = 100.123
+info['position'] = 1
+info['total_profit'] = 2.123
+info['total_return'] = .1
 info['date'] = "2024-12-13"
 info['symbol'] = "BTC-USD"
 config_path = "configs/provider_configs/openai_config.json"
 provider = OpenAIProvider(config_path)
-lmi_prompt.run(state=state,
+prompt.run(state=state,
                     info=info,
                     params=params,
                     provider=provider
