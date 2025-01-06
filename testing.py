@@ -13,8 +13,8 @@ load_dotenv(verbose=True)
 # print(template)
 # print(type(template))
 
-template_path = "res/prompts/templates/past_market_intelligence_summary.yaml"
-lmi_prompt = PastMarketIntelligenceSummaryPrompt(model="gpt-4o",
+template_path = "res/prompts/templates/latest_market_intelligence_summary.yaml"
+lmi_prompt = LatestMarketIntelligenceSummaryPrompt(model="gpt-4o",
                                                         template_path=template_path)
 params = dict()
 params["past_market_intelligence"] = "test past market intelligence string"
