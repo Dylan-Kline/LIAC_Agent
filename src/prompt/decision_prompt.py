@@ -37,11 +37,13 @@ class DecisionPrompt(YamlPrompt):
                 return "a decrease of {:.2f}%".format(absolute_percentage)
             
         asset_price = info["price"]
+        asset_cash = info["cash"]
         asset_position = info["position"]
         asset_profit = info["total_profit"]
         asset_return = info["total_return"]
 
         asset_price = "{:.2f}".format(asset_price)
+        asset_cash = "{:.2f}".format(asset_cash)
         asset_position = "{}".format(int(asset_position))
         asset_profit = "{:.2f}%".format(asset_profit)
         asset_return = convert_to_text(asset_return)
@@ -50,6 +52,7 @@ class DecisionPrompt(YamlPrompt):
 
         res_params.update({
             "asset_price": asset_price,
+            "asset_cash": asset_cash,
             "asset_position": asset_position,
             "asset_profit": asset_profit,
             "asset_return": asset_return,
