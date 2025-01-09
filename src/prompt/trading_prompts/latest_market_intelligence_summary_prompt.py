@@ -179,7 +179,7 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
             diverse_query: DiverseQuery = None,
             **kwargs):
         
-        print(">" * 50 + f"{info['date']} - Running Latest Market Intelligence Summary Trading Prompt" + ">" * 50)
+        print(">" * 50 + f"{info['date']} - Running Latest Market Intelligence Summary Prompt" + ">" * 50)
         
         task_params = self._convert_to_params(state=state,
                                              info=info,
@@ -210,5 +210,5 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
             "latest_market_intelligence_summary": summary,
         })
         
-        print("<" * 50 + f"{info['date']} - Finish Running Latest Market Intelligence Summary Trading Prompt" + "<" * 50)
+        print("<" * 50 + f"{info['date']} - Finished Running the Latest Market Intelligence Summary Prompt" + "<" * 50)
         return result

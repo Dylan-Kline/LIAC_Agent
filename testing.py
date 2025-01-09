@@ -1,7 +1,7 @@
 from src.utils.file_utils import *
-from src.prompt.latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt
-from src.prompt.past_market_intelligence_summary_prompt import PastMarketIntelligenceSummaryPrompt
-from src.prompt.decision_prompt import DecisionPrompt
+from prompt.trading_prompts.latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt
+from prompt.trading_prompts.past_market_intelligence_summary_prompt import PastMarketIntelligenceSummaryPrompt
+from prompt.trading_prompts.decision_prompt import DecisionPrompt
 from src.provider.provider import OpenAIProvider
 
 import os

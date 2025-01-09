@@ -1,2 +1,5 @@
 from .prompt import YamlPrompt
-from .latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt
+from .trading_prompts.latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt
+from .trading_prompts.past_market_intelligence_summary_prompt import PastMarketIntelligenceSummaryPrompt
+from .trading_prompts.decision_prompt import DecisionPrompt
+from .trading_prompts.low_level_reflection_prompt import LowLevelReflectionPrompt
