@@ -36,10 +36,8 @@ class YamlPrompt():
              raise FileNotFoundError(f"Template file not found: {self.template_path}")
         
         raw_template = read_resource_file(self.template_path)
-        print(raw_template)
         try:
             template = yaml.safe_load(raw_template)
-            print(template)
             if 'messages' not in template:
                 raise ValueError("Main template YAML must contain a 'messages' key.")
             return template
@@ -208,7 +206,6 @@ class YamlPrompt():
         
         if match:
             yaml_content = match.group(1).strip()
-            print(yaml_content)
             return yaml_content
         else:
             raise ValueError("No YAML code block found in the response.")
@@ -225,7 +222,6 @@ class YamlPrompt():
         
         yaml_content = self.extract_yaml(response=response)
         response_dict = yaml.safe_load(yaml_content)
-        print("response_dict: \n{}\n".format(response_dict))
         
         for key in check_keys:
             if key not in response_dict["output"]:
