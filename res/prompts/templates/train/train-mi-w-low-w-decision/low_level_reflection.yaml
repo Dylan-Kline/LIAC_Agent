@@ -1,9 +1,9 @@
 messages:
     - role: "system"
-    content: |
+      content: |
         {{system_content}}
     - role: "user"
-    content: |
+      content: |
         {{low_level_reflection_task_description}}
         The following are summaries of the latest (i.e., today) and past (i.e., before today) market intelligence (e.g., news, financial reports) you've provided.
         The following is a summary from your assistant of the past market intelligence:

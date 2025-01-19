@@ -16,6 +16,7 @@ class LowLevelReflectionPrompt(YamlPrompt):
     def __init__(self,
                  *args,
                  model: Any = None,
+                 template_path,
                  short_term_past_date_range: int = 1,
                  medium_term_past_date_range: int = 7,
                  long_term_past_date_range: int = 14,
@@ -36,7 +37,7 @@ class LowLevelReflectionPrompt(YamlPrompt):
         self.look_back_days = look_back_days
         self.look_forward_days = look_forward_days
 
-        super(LowLevelReflectionPrompt, self).__init__()
+        super(LowLevelReflectionPrompt, self).__init__(template_path=template_path)
 
     def _convert_to_price_movement(self, state: Dict, current_date: str = None):
 
@@ -60,16 +61,16 @@ class LowLevelReflectionPrompt(YamlPrompt):
         past_price = price[price["timestamp"] <= current_date]
         next_price = price[price["timestamp"] >= current_date]
 
-        short_term_past_price_movement = past_price["adj_close"].pct_change(periods=self.short_term_past_date_range).iloc[-1]
-        medium_term_past_price_movement = past_price["adj_close"].pct_change(periods=self.medium_term_past_date_range).iloc[-1]
-        long_term_past_price_movement = past_price["adj_close"].pct_change(periods=self.long_term_past_date_range).iloc[-1]
+        short_term_past_price_movement = past_price["close"].pct_change(periods=self.short_term_past_date_range).iloc[-1]
+        medium_term_past_price_movement = past_price["close"].pct_change(periods=self.medium_term_past_date_range).iloc[-1]
+        long_term_past_price_movement = past_price["close"].pct_change(periods=self.long_term_past_date_range).iloc[-1]
         short_term_past_price_movement_text = price_movement_to_text(short_term_past_price_movement)
         medium_term_past_price_movement_text = price_movement_to_text(medium_term_past_price_movement)
         long_term_past_price_movement_text = price_movement_to_text(long_term_past_price_movement)
 
-        short_term_next_price_movement = next_price["adj_close"].pct_change(periods=self.short_term_next_date_range).shift(-self.short_term_next_date_range).iloc[0]
-        medium_term_next_price_movement = next_price["adj_close"].pct_change(periods=self.medium_term_next_date_range).shift(-self.medium_term_next_date_range).iloc[0]
-        long_term_next_price_movement = next_price["adj_close"].pct_change(periods=self.long_term_next_date_range).shift(-self.long_term_next_date_range).iloc[0]
+        short_term_next_price_movement = next_price["close"].pct_change(periods=self.short_term_next_date_range).shift(-self.short_term_next_date_range).iloc[0]
+        medium_term_next_price_movement = next_price["close"].pct_change(periods=self.medium_term_next_date_range).shift(-self.medium_term_next_date_range).iloc[0]
+        long_term_next_price_movement = next_price["close"].pct_change(periods=self.long_term_next_date_range).shift(-self.long_term_next_date_range).iloc[0]
         short_term_next_price_movement_text = price_movement_to_text(short_term_next_price_movement)
         medium_term_next_price_movement_text = price_movement_to_text(medium_term_next_price_movement)
         long_term_next_price_movement_text = price_movement_to_text(long_term_next_price_movement)
@@ -91,7 +92,7 @@ class LowLevelReflectionPrompt(YamlPrompt):
 
         return res
 
-    def convert_to_params(self,
+    def _convert_to_params(self,
                          state: Dict,
                          info: Dict,
                          params: Dict,
@@ -109,7 +110,7 @@ class LowLevelReflectionPrompt(YamlPrompt):
         return res_params
 
     @backoff.on_exception(backoff.constant, (KeyError), max_tries=3, interval=10)
-    def get_response_dict(self,
+    def get_response(self,
                           provider,
                           model,
                           messages,
@@ -170,8 +171,6 @@ class LowLevelReflectionPrompt(YamlPrompt):
                                              provider=provider,
                                              diverse_query=diverse_query)
         message = self.assemble_messages(params=task_params)
-        print(message)
-        exit()
         response_dict = self.get_response(provider=provider,
                                                model=self.model,
                                                messages=message)

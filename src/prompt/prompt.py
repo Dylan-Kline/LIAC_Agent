@@ -72,7 +72,7 @@ class YamlPrompt():
         import re
         pattern = re.compile(r"\{\{\s*(\w+)\s*\}\}")
         image_path_placeholder = pattern.findall(text)
-        return image_path_placeholder
+        return image_path_placeholder[0]
     
     def render_template(self, template_str: str, params: Dict[str, Any]) -> str:
         """
@@ -138,6 +138,7 @@ class YamlPrompt():
         # Create the user message text message
         user_message_content = self.template['messages'][1].get('content', '')
         user_messages = []
+        image_message = None
         for placeholder_list in placeholders['user']:
             for placeholder in placeholder_list:
 
@@ -156,7 +157,6 @@ class YamlPrompt():
                                                                         params[placeholder])
 
                 potential_image_name = placeholder + "image"
-                image_message = None
                 if ASSET.check_task_prompts(name=potential_image_name):
                     
                     # Fetch and encode the image
@@ -176,8 +176,6 @@ class YamlPrompt():
                         "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"},
                     }
         
-        print(user_message_content)
-        exit()
         user_message = {
             "role": "user",
             "content": [
