@@ -1,0 +1,18 @@
+messages:
+    - role: "system"
+    content: |
+        {{system_content}}
+    - role: "user"
+    content: |
+        {{low_level_reflection_task_description}}
+        The following are summaries of the latest (i.e., today) and past (i.e., before today) market intelligence (e.g., news, financial reports) you've provided.
+        The following is a summary from your assistant of the past market intelligence:
+            {{past_market_intelligence_summary}}
+        The following is a summary from your assistant of the latest market intelligence:
+            {{latest_market_intelligence_summary}}
+        {{market_intelligence_effects}}
+        {{low_level_reflection_kline_chart}}
+        {{low_level_reflection_price_change_description_with_next}}
+        {{low_level_reflection_effects}}
+        {{low_level_reflection_prompt_with_next}}
+        {{low_level_reflection_output_format}}

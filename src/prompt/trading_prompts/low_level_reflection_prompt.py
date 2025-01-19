@@ -53,7 +53,7 @@ class LowLevelReflectionPrompt(YamlPrompt):
         price = state["price"]
         price = deepcopy(price)
         price = price.reset_index(drop=False)
-        price = price[["timestamp", "adj_close"]]
+        price = price[["timestamp", "close"]]
         price = price.dropna(axis=0, how="any")
         price = price.drop_duplicates(subset=["timestamp"], keep="first")
 
