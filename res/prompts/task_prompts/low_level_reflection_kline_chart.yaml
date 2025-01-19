@@ -1,0 +1,16 @@
+low_level_reflection_kline_chart:
+  text: |
+    The following is a Kline chart with Moving Average (MA) and Bollinger Bands (BB) technical indicators.
+    1.Moving Average (MA) is a trend indicator that is calculated by averaging the price over a period of time. The MA is used to smooth out price fluctuations and highlight longer-term trends or cycles.
+    2.Bollinger Bands (BB) are a technical analysis tool based on moving averages and standard deviations, which are used to identify overbought and oversold conditions.
+     - Bollinger Band Upper (BBU): The upper band is calculated by adding 2 standard deviations to the moving average.
+     - Bollinger Band Lower (BBL): The lower band is calculated by subtracting 2 standard deviations from the moving average.
+     - When the bandwidth (the distance between the upper and lower bands) widens, it indicates increased market volatility; when it narrows, it indicates reduced volatility.
+    3.The Kline chart shows the price movements of the asset over time.
+     - The "horizontal axis" is the date and the "vertical axis" is the price.
+     - The wider part of the candlestick, known as the "real body" represents the range between the opening and closing prices. Lines extending from the top and bottom of the body, also called "shadows" or "tails" indicate the high and low prices during the period.
+     - The "GREEN" candlestick indicates that the closing price is higher than the opening price, and the "RED" candlestick indicates that the closing price is lower than the opening price.
+     - The "BLUE" line is MA5, the "GREEN" line is BBL, the "YELLOW" line is BBU.
+     - The "GREY BALLOON MARKER" is today's date.
+  image: |
+    {{kline_path}}

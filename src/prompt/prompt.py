@@ -64,6 +64,16 @@ class YamlPrompt():
             placeholders[role] = placeholds
         return placeholders
     
+    def _get_path_placeholder(self, text) -> str:
+        '''
+        Extracts the image path placeholder from the given text.
+        :return: String containing the placeholder text
+        '''
+        import re
+        pattern = re.compile(r"\{\{\s*(\w+)\s*\}\}")
+        image_path_placeholder = pattern.findall(text)
+        return image_path_placeholder
+    
     def render_template(self, template_str: str, params: Dict[str, Any]) -> str:
         """
         Renders a template string using Jinja2 with provided parameters.
@@ -113,7 +123,7 @@ class YamlPrompt():
                 elif placeholder in params:
                     system_message_content = system_message_content.replace(placeholder_replaced,
                                                                             params[placeholder])
-                    # may need to convert the params value to a str if its a price
+                    # TODO may need to convert the params value to a str if its a price
         
         system_message = {
             "role": "system",
@@ -144,6 +154,27 @@ class YamlPrompt():
                 elif placeholder in params:
                     user_message_content = user_message_content.replace(placeholder_replaced,
                                                                         params[placeholder])
+
+                potential_image_name = placeholder + "image"
+                image_message = None
+                if ASSET.check_task_prompts(name=potential_image_name):
+                    
+                    # Fetch and encode the image
+                    image_content = ASSET.get_task_prompts(name=potential_image_name)
+                    image_placeholder = self._get_path_placeholder(image_content)
+                    str_to_replace = "{{" + f"{image_placeholder}" + "}}"
+                    
+                    if image_placeholder in params:
+                        image_content = image_content.replace(str_to_replace,
+                                                            params[image_placeholder]).strip()
+                    else:
+                        print("No image path found for kline chart.")
+                        
+                    image_base64 = encode_image(image_path=image_content)
+                    image_message = {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"},
+                    }
         
         print(user_message_content)
         exit()
@@ -153,9 +184,11 @@ class YamlPrompt():
                 {
                     "type": "text",
                     "text": user_message_content
-                }
+                },
             ]
         }
+        if image_message:
+            user_message["content"].append(image_message)
         user_messages.append(user_message)
         
         return [system_message] + user_messages

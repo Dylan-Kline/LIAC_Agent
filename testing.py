@@ -1,7 +1,7 @@
 from src.utils.file_utils import *
-from prompt.trading_prompts.latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt
-from prompt.trading_prompts.past_market_intelligence_summary_prompt import PastMarketIntelligenceSummaryPrompt
-from prompt.trading_prompts.decision_prompt import DecisionPrompt
+from src.prompt.trading_prompts.latest_market_intelligence_summary_prompt import LatestMarketIntelligenceSummaryPrompt
+from src.prompt.trading_prompts.past_market_intelligence_summary_prompt import PastMarketIntelligenceSummaryPrompt
+from src.prompt.trading_prompts.decision_prompt import DecisionPrompt
 from src.provider.provider import OpenAIProvider
 
 import os
@@ -15,7 +15,7 @@ load_dotenv(verbose=True)
 # print(type(template))
 
 #template_path = "res/prompts/templates/latest_market_intelligence_summary.yaml"
-template_path = "res/prompts/templates/decision_template.yaml"
+template_path = "res/prompts/templates/train/train-mi-w-decision/decision_template.yaml"
 # prompt = LatestMarketIntelligenceSummaryPrompt(model="gpt-4o",
 #                                                         template_path=template_path)
 prompt = DecisionPrompt(model="gpt-4o",
@@ -36,6 +36,7 @@ state["price"] = pd.DataFrame()
 state["news"] = pd.DataFrame()
 info = dict()
 info['price'] = 100.123
+info['cash'] = 10000.00
 info['position'] = 1
 info['total_profit'] = 2.123
 info['total_return'] = .1

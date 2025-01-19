@@ -58,6 +58,8 @@ class Asset(metaclass=Singleton):
                 for _, value in task_prompt.items():
                     if 'text' in value:
                         task_prompts[name] = value['text']
+                    if 'image' in value:
+                        task_prompts[name + "image"] = value['image']
                         
         return task_prompts
 

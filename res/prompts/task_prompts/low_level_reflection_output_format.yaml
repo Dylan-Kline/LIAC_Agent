@@ -1,0 +1,11 @@
+output_format:
+  text: |
+    You should ONLY return a valid YAML object. You MUST FOLLOW the YAML output format as follows:
+    ```yaml
+    output:
+      reasoning: "Analysis that you provided."
+        short_term_reasoning: "Reasoning about the Short-Term price movements."
+        medium_term_reasoning: "Reasoning about the Medium-Term price movements."
+        long_term_reasoning: "Reasoning about the Long-Term price movements."
+      query: "The key sentence should be utilized to retrieve past reasoning for price movements."
+    ```
