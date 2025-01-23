@@ -4,8 +4,8 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Dict, Any
 
-from query.query_types import extract_query_type
-from query.diverse_query import DiverseQuery
+from src.query.query_types import extract_query_type
+from src.query.diverse_query import DiverseQuery
 from src.memory import MemoryInterface
 from src.provider import EmbeddingProvider
 ROOT = str(Path(__file__).resolve().parents[2])
