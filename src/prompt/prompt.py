@@ -7,11 +7,13 @@ from copy import deepcopy
 from typing import Dict, Any, List
 from jinja2 import Environment, BaseLoader, Template, exceptions as jinja2_exceptions
 
+from src.registry import PROMPT
 from src.memory import MemoryInterface
 from src.asset import ASSET
 from src.provider.provider import encode_image
 from src.utils.file_utils import read_resource_file
 
+@PROMPT.register_module(force=True)
 class YamlPrompt():
     '''General prompt class for all prompt templates in YAML format.'''
     

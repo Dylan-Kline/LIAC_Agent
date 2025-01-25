@@ -17,6 +17,7 @@ import tiktoken
 import numpy as np
 from openai import OpenAI, AzureOpenAI, APIError, RateLimitError, BadRequestError, APITimeoutError
 
+from src.registry import PROVIDER
 from src.provider import LLMProvider, EmbeddingProvider
 from src.utils import assemble_project_path, load_json
 
@@ -24,6 +25,7 @@ MAX_TOKENS = {
     "gpt-3.5-turbo-0301": 4097,
     "gpt-3.5-turbo-0613": 4097,
     "gpt-3.5-turbo-16k-0613": 16385,
+    "gpt-4o": 16384,
 }
 
 PROVIDER_SETTING_KEY_VAR = "key_var"
@@ -34,6 +36,7 @@ PROVIDER_SETTING_BASE_VAR = "base_var"       # Azure-speficic setting
 PROVIDER_SETTING_API_VERSION = "api_version" # Azure-speficic setting
 PROVIDER_SETTING_DEPLOYMENT_MAP = "models"   # Azure-speficic setting
 
+@PROVIDER.register_module(force=True)
 class OpenAIProvider(LLMProvider, EmbeddingProvider):
     """A class that wraps a given model"""
 

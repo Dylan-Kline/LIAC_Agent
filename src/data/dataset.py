@@ -9,6 +9,9 @@ sys.path.append(ROOT)
 pd.set_option('display.max_columns', 100000)
 pd.set_option('display.max_rows', 100)
 
+from src.registry import DATASET
+
+@DATASET.register_module(force=True)
 class Dataset:
     def __init__(self,
                  root: str = None,
@@ -32,6 +35,7 @@ class Dataset:
 
         self.assets = self._init_assets()
         self.prices = self._load_prices()
+        print(type(self.prices))
         self.news = self._load_news()
         
     def _init_assets(self):
@@ -57,7 +61,7 @@ class Dataset:
             df = df[["timestamp", "open", "high", "low", "close", "volume"]]
 
             prices[asset] = df
-
+            
         return prices
 
     def _load_news(self):
@@ -107,7 +111,7 @@ if __name__ == '__main__':
         tag = "exp"
     )
 
-    selected_asset = "BTC-USDT"
+    selected_asset = "BTC-USD"
 
     print(len(dataset.prices[selected_asset]))
     print(len(dataset.news[selected_asset]))

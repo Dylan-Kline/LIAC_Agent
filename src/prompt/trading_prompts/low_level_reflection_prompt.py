@@ -10,7 +10,9 @@ from src.asset import ASSET
 from src.memory import MemoryInterface
 from src.provider import EmbeddingProvider
 from src.query import DiverseQuery
+from src.registry import PROMPT
 
+@PROMPT.register_module(force=True)
 class LowLevelReflectionPrompt(YamlPrompt):
 
     def __init__(self,

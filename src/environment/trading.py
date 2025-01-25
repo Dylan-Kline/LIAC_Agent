@@ -4,6 +4,8 @@ from typing import Any
 import numpy as np
 import gym
 
+from src.registry import ENVIRONMENT
+@ENVIRONMENT.register_module(force=True)
 class TradingEnvironment(gym.Env):
     def __init__(self,
                  mode: str = "train",
@@ -94,10 +96,10 @@ class TradingEnvironment(gym.Env):
         self.symbol = selected_asset
         
         # Data Parameters
-        self.prices = self.dataset.prices
-        self.news = self.dataset.news
-        self.prices.set_index("timestamp", inplace=True)
-        self.news.set_index("timestamp", inplace=True)
+        self.prices = self.dataset.prices[selected_asset]
+        self.news = self.dataset.news[selected_asset]
+        self.prices = self.prices.reset_index(drop=True)
+        self.news = self.news.reset_index(drop=True)
         
         # Calendar Date Parameters
         self.start_date = start_date
@@ -106,6 +108,9 @@ class TradingEnvironment(gym.Env):
         self.end_date = datetime.strptime(self.end_date, "%Y-%m-%d")
         self.init_day = self.prices[self.prices["timestamp"] >= start_date].index.values[0]
         self.end_day = self.prices[self.prices["timestamp"] <= end_date].index.values[-1]
+        
+        self.prices.set_index("timestamp", inplace=True)
+        self.news.set_index("timestamp", inplace=True)
         
         # Forward and Backward Data Windows
         self.look_back_days = look_back_days
@@ -117,7 +122,7 @@ class TradingEnvironment(gym.Env):
         self.discount = discount
         
         # Initial Trading Parameters
-        self.dat = self.init_day
+        self.day = self.init_day
         self.value = self.initial_amount
         self.cash = self.initial_amount
         self.position = 0
@@ -196,13 +201,13 @@ class TradingEnvironment(gym.Env):
         '''
         state = {}
 
-        days_ago = self.prices_df.index[self.day - self.look_back_days]
-        days_future = self.prices_df.index[min(self.day + self.look_forward_days, len(self.prices_df) - 1)]
+        days_ago = self.prices.index[self.day - self.look_back_days]
+        days_future = self.prices.index[min(self.day + self.look_forward_days, len(self.prices) - 1)]
 
-        price = self.prices_df[self.prices_df.index <= days_future]
+        price = self.prices[self.prices.index <= days_future]
         price = price[price.index >= days_ago]
 
-        news = self.news_df[self.news_df.index <= days_future]
+        news = self.news[self.news.index <= days_future]
         news = news[news.index >= days_ago]
 
         state["price"] = price

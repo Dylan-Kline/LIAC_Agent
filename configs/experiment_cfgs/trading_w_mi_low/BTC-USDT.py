@@ -1,20 +1,18 @@
 root = None
-selected_asset = "ETHUSD"
+selected_asset = "BTC-USDT"
 asset_type = "crypto"
-workdir = "workdir/trading_mi_w_low_w_decision"
-tool_params_dir = "res/strategy_record/trading"
-tool_use_best_params = True
+workdir = "workdir/"
 tag = f"{selected_asset}"
 
 initial_amount = 1e5
 transaction_cost_pct = 1.5e-4
 
 # adjust the following parameters mainly
-trader_preference = "aggressive_trader"
-train_start_date = "2022-06-01"
-train_end_date = "2023-06-01"
-valid_start_date = "2023-06-01"
-valid_end_date = "2024-01-01"
+trader_preference = "moderate_trader"
+train_start_date = "2023-06-10"
+train_end_date = "2024-06-10"
+valid_start_date = "2024-06-10"
+valid_end_date = "2024-12-12"
 
 short_term_past_date_range = 1
 medium_term_past_date_range = 7
@@ -27,32 +25,29 @@ look_back_days = long_term_past_date_range
 previous_action_look_back_days = 7
 top_k = 5
 
-train_latest_market_intelligence_summary_template_path = "res/prompts/template/train/trading_mi-w-low-w-decision/latest_market_intelligence_summary.html"
-train_past_market_intelligence_summary_template_path = "res/prompts/template/train/trading_mi-w-low-w-decision/past_market_intelligence_summary.html"
-train_low_level_reflection_template_path = "res/prompts/template/train/trading_mi-w-low-w-decision/low_level_reflection.html"
-train_decision_template_path = "res/prompts/template/train/trading_mi-w-low-w-decision/decision.html"
+train_latest_market_intelligence_summary_template_path = "res/prompts/templates/train/train-mi-w-low-w-decision/latest_market_intelligence_summary.yaml"
+train_past_market_intelligence_summary_template_path = "res/prompts/templates/train/train-mi-w-low-w-decision/past_market_intelligence_summary.yaml"
+train_low_level_reflection_template_path = "res/prompts/templates/train/train-mi-w-low-w-decision/low_level_reflection.yaml"
+train_decision_template_path = "res/prompts/templates/train/train-mi-w-low-w-decision/decision_template.yaml"
 
-valid_latest_market_intelligence_summary_template_path = "res/prompts/template/valid/trading_mi-w-low-w-decision/latest_market_intelligence_summary.html"
-valid_past_market_intelligence_summary_template_path = "res/prompts/template/valid/trading_mi-w-low-w-decision/past_market_intelligence_summary.html"
-valid_low_level_reflection_template_path = "res/prompts/template/valid/trading_mi-w-low-w-decision/low_level_reflection.html"
-valid_decision_template_path = "res/prompts/template/valid/trading_mi-w-low-w-decision/decision.html"
+valid_latest_market_intelligence_summary_template_path = "res/prompts/templates/valid/train-mi-w-low-w-decision/latest_market_intelligence_summary.yaml"
+valid_past_market_intelligence_summary_template_path = "res/prompts/templates/valid/train-mi-w-low-w-decision/past_market_intelligence_summary.yaml"
+valid_low_level_reflection_template_path = "res/prompts/templates/valid/train-mi-w-low-w-decision/low_level_reflection.yaml"
+valid_decision_template_path = "res/prompts/templates/valid/train-mi-w-low-w-decision/decision_template.yaml"
 
 dataset = dict(
     type="Dataset",
     root=root,
     price_path="datasets/exp_cryptos/price",
     news_path="datasets/exp_cryptos/news",
-    guidance_path=None,
-    sentiment_path=None,
-    economics_path=None,
     interval="1d",
-    assets_path="configs/_asset_list_/exp_cryptos.txt",
+    assets_path="configs/_asset_lists_/exp_cryptos.txt",
     workdir=workdir,
     tag=tag
 )
 
 train_environment = dict(
-    type="EnvironmentTrading",
+    type="TradingEnvironment",
     mode="train",
     dataset=None,
     selected_asset=selected_asset,
@@ -67,8 +62,8 @@ train_environment = dict(
 )
 
 valid_environment = dict(
-type="EnvironmentTrading",
-    mode="train",
+type="TradingEnvironment",
+    mode="valid",
     dataset=None,
     selected_asset=selected_asset,
     asset_type=asset_type,
@@ -100,18 +95,18 @@ memory = dict(
 )
 
 latest_market_intelligence_summary = dict(
-    type="LatestMarketIntelligenceSummaryTrading",
-    model = "gpt-4-1106-preview"
+    type="LatestMarketIntelligenceSummaryPrompt",
+    model = "gpt-4o"
 )
 
 past_market_intelligence_summary = dict(
-    type="PastMarketIntelligenceSummaryTrading",
-    model = "gpt-4-1106-preview"
+    type="PastMarketIntelligenceSummaryPrompt",
+    model = "gpt-4o"
 )
 
 low_level_reflection = dict(
-    type="LowLevelReflectionTrading",
-    model = "gpt-4-vision-preview",
+    type="LowLevelReflectionPrompt",
+    model = "gpt-4o",
     short_term_past_date_range=short_term_past_date_range,
     medium_term_past_date_range=medium_term_past_date_range,
     long_term_past_date_range=long_term_past_date_range,
@@ -123,11 +118,11 @@ low_level_reflection = dict(
 )
 
 decision = dict(
-    type="DecisionTrading",
-    model = "gpt-4-1106-preview",
+    type="DecisionPrompt",
+    model = "gpt-4o",
 )
 
 provider = dict(
     type="OpenAIProvider",
-    provider_cfg_path="configs/openai_config.json",
+    provider_cfg_path="configs/provider_configs/openai_config.json",
 )

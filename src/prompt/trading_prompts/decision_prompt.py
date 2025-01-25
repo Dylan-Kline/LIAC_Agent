@@ -9,7 +9,9 @@ from src.asset import ASSET
 from src.memory import MemoryInterface
 from src.provider import EmbeddingProvider
 from src.query import DiverseQuery
+from src.registry import PROMPT
 
+@PROMPT.register_module(force=True)
 class DecisionPrompt(YamlPrompt):
 
     def __init__(self,
@@ -97,11 +99,10 @@ class DecisionPrompt(YamlPrompt):
                                              provider=provider,
                                              diverse_query=diverse_query)
         message = self.assemble_messages(params=task_params)
-        print(message)
-        exit()
         response = self.get_response(provider=provider,
                                                model=self.model,
                                                messages=message)
+        
         response = response['output']
         action = response["action"]
         reasoning = response["reasoning"]

@@ -8,10 +8,12 @@ from typing import (
 )
 from collections import deque
 
+from src.registry import MEMORY
 from src.memory.base import VectorStore, Image
 from src.memory.faiss_store import FaissVectorStore
 from src.memory.basic_memory import MemoryUnit
 
+@MEMORY.register_module(force=True)
 class MemoryInterface:
     '''Interface to interact with each memory storage unit.'''
     

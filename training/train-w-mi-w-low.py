@@ -15,14 +15,14 @@ from src.utils.misc import update_data_root
 from src.query.diverse_query import DiverseQuery
 from src.prompt.helpers import (prepare_latest_market_intelligence_params,
                              prepare_low_level_reflection_params)
-from src.registery import *
+from src.registry import *
 
 from mmengine.config import Config, DictAction
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train with mi and low.")
     parser.add_argument("--config", 
-                        default=os.path.join(ROOT, "configs", "experiment_cfgs", "trading_w_mi_low", "BTCUSD.py"),
+                        default=os.path.join(ROOT, "configs", "experiment_cfgs", "trading_w_mi_low", "BTC-USDT.py"),
                         help="config file path")
     parser.add_argument(
         '--cfg-options',
@@ -96,18 +96,198 @@ def setup_environment():
     os.makedirs(experiment_path, exist_ok=True)
     cfg.dump(os.path.join(experiment_path, 'config.py'))
 
-    return cfg
-
+    return cfg, experiment_path
 
 def main():
 
-    cfg = setup_environment()
+    cfg, experiment_path = setup_environment()
 
-    # Initialize environments, memory, provider, and querys
+    # Initialize provider and training dataset
     provider = PROVIDER.build(cfg.provider)
+    dataset = DATASET.build(cfg.dataset)
     
+    # Initialize trading environment
+    cfg.train_environment['dataset'] = dataset
+    train_env = ENVIRONMENT.build(cfg.train_environment)
+    cfg.valid_environment['dataset'] = dataset
+    valid_env = ENVIRONMENT.build(cfg.valid_environment)
     
+    # Init plots and memory
+    plots = PLOTS.build(cfg.plots)
+    cfg.memory["symbols"] = dataset.assets
+    cfg.memory["embedding_dim"] = provider.get_embedding_dim()
+    memory = MEMORY.build(cfg.memory)
+    
+    # Load local memory
+    if cfg.if_load_memory and cfg.memory_path is not None:
+        print("Loading local memory...")
+        memory_path = os.path.join(cfg.root, cfg.memory_path)
+        memory.load_local(memory_path=memory_path)
+        
+    # Setup diverse query system and strategy agents if need be
+    diverse_query = DiverseQuery(memory=memory, 
+                                 provider=provider, 
+                                 top_k=cfg.top_k)
+    
+    # Train
+    if cfg.if_train:
+        train_records = run(cfg,
+                            train_env,
+                            plots,
+                            memory,
+                            provider,
+                            diverse_query,
+                            experiment_path,
+                            mode = "train")
+        train_save_path = os.path.join(experiment_path, "train_records.json")
 
+        memory.save_local(memory_path=cfg.memory_path)
+        save_json(train_records, train_save_path)
+    
+    # Validate
+    if cfg.if_valid:
+        valid_records = run(cfg,
+                            valid_env,
+                            plots,
+                            memory,
+                            provider,
+                            diverse_query,
+                            experiment_path,
+                            mode = "valid")
+        valid_save_path = os.path.join(experiment_path, "valid_records.json")
+        save_json(valid_records, valid_save_path)
+    
+def run(cfg, 
+        env, 
+        plots, 
+        memory, 
+        provider, 
+        diverse_query,
+        experiment_path,
+        mode = "train"):
+    
+    # Grab or make trading records directory and memory records
+    trading_records_path = os.path.join(experiment_path, "trading_records")
+    os.makedirs(trading_records_path, exist_ok=True)
+    memory_path = os.path.join(experiment_path, "memory_records")
+    os.makedirs(memory_path, exist_ok=True)
+    
+    if cfg.if_load_trading_record and cfg.trading_record_path is not None:
+        print("Loading trading records...")
+        record_path = os.path.join(cfg.root, cfg.trading_record_path)
+        trading_records = load_json(record_path)
+    else:
+        # Trading from scratch
+        trading_records = {
+            "symbol": [],
+            "day": [],
+            "value": [],
+            "cash": [],
+            "position": [],
+            "ret": [],
+            "date": [],
+            "price": [],
+            "discount": [],
+            "kline_path": [],
+            "trading_path": [],
+            "total_profit": [],
+            "total_return": [],
+            "action": [],
+            "reasoning": [],
+        }
+        
+    state, info = env.reset()
+    
+    # Optional start from checkpoint (loops through each previous action taken until a new date is reached)
+    if cfg.checkpoint_start_date is not None:
+        for action, date in zip(trading_records["action"], trading_records["date"]):
+            if date <= cfg.checkpoint_start_date:
+                action = env.action_map[action]
+                state, reward, done, truncated, info = env.step(action)
+            else:
+                break
+    
+    while True:
+        action = run_step(cfg,
+                          state,
+                          info,
+                          plots,
+                          memory,
+                          provider,
+                          diverse_query,
+                          experiment_path,
+                          trading_records,
+                          mode)
+        
+        assert action in env.action_map.keys(), f"Action {action} is not in the action map {env.action_map.keys()}"
+
+        action = env.action_map[action]
+        state, reward, done, truncated, info = env.step(action)
+        
+        if trading_records["action"][-1] != info["action"]:
+            trading_records["action"][-1] = info["action"]
+            
+        if done:
+            trading_records["total_profit"].append(info["total_profit"])
+            trading_records["total_return"].append(info["total_return"])
+            trading_records["date"].append(info["date"])
+            trading_records["price"].append(info["price"])
+            break
+        
+        # Save memories
+        memory_save_path = os.path.join(memory_path, f"memory_{str(info['date'])}")
+        os.makedirs(memory_save_path, exist_ok=True)
+        memory.save_local(memory_path=memory_save_path)
+        
+        # Save trading records
+        save_json(trading_records, os.path.join(trading_records_path, f"trading_records_{str(info['date'])}.json"))
+
+    return trading_records
+
+def run_step(cfg,
+             state,
+             info,
+             plots,
+             memory,
+             provider,
+             diverse_query,
+             experiment_path,
+             trading_records,
+             mode):
+    
+    params = dict()
+    save_dir = "train" if mode == "train" else "valid"
+    
+    # plot kline chart
+    kline_path = plots.plot_kline(state=state,
+                                  info=info,
+                                  save_dir=save_dir,
+                                  mode=mode)
+    params.update({
+        "kline_path":kline_path
+    })
+    
+    # Latest market intelligence
+    lmi_summary_template_path = (cfg.train_latest_market_intelligence_summary_template_path 
+                                 if mode == "train" 
+                                 else cfg.valid_latest_market_intelligence_summary_template_path)
+    cfg.latest_market_intelligence_summary["template_path"] = lmi_summary_template_path
+    lmi_summary = PROMPT.build(cfg.latest_market_intelligence_summary)
+    lmi_result = lmi_summary.run(state=state,
+                                 info=info,
+                                 params=params,
+                                 memory=memory,
+                                 provider=provider,
+                                 diverse_query=diverse_query,
+                                 exp_path=experiment_path,
+                                 save_dir=save_dir,)
+    print(lmi_result["response_dict"])
+    
+    # TODO
+    # update all of the config file to be used with the dataset from coinbase and fmp news
+    # update config file to be for bitcoin coinbase dataset
+    # update config file to include a template_path parameter
+    # test out lmi results
 
 if __name__ == "__main__":
     main()
