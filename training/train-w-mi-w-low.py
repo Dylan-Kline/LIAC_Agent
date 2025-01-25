@@ -284,10 +284,8 @@ def run_step(cfg,
     print(lmi_result["response_dict"])
     
     # TODO
-    # update all of the config file to be used with the dataset from coinbase and fmp news
-    # update config file to be for bitcoin coinbase dataset
-    # update config file to include a template_path parameter
     # test out lmi results
+    # figure out why price and news are not being given to the model
 
 if __name__ == "__main__":
     main()
