@@ -2,6 +2,7 @@ import json
 import os
 import backoff
 import yaml
+import re
 import abc
 from copy import deepcopy
 from typing import Dict, Any, List
@@ -93,6 +94,16 @@ class YamlPrompt():
                            *args,
                            **kwargs) -> Dict:
         raise NotImplementedError
+    
+    def _preprocess_yaml_output(self,
+                                response):
+        processed_response = re.sub(
+            r"(ID:\s\d+\s-\s)(.*)",  # Match 'ID:', the ID number, and the rest of the line
+            r'\1"\2"',              # Keep 'ID:' and ID number, but wrap the rest in quotes
+            response
+        )
+
+        return processed_response
 
     def assemble_messages(
         self,

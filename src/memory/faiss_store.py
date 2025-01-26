@@ -89,7 +89,7 @@ class FaissVectorStore(VectorStore):
             raise ValueError("Number of keys must match number of embeddings.")
         
         # Convert embeddings to float32 numpy array
-        vecs = np.arry(embeddings, dtype=np.float32)
+        vecs = np.array(embeddings, dtype=np.float32)
         if vecs.shape[1] != self.dim:
             raise ValueError(f"Embedding dimension {vecs.shape[1]} does not match index dimension {self.dim}.")
         

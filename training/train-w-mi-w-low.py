@@ -169,7 +169,7 @@ def run(cfg,
     # Grab or make trading records directory and memory records
     trading_records_path = os.path.join(experiment_path, "trading_records")
     os.makedirs(trading_records_path, exist_ok=True)
-    memory_path = os.path.join(experiment_path, "memory_records")
+    memory_path = os.path.join(experiment_path, "memory")
     os.makedirs(memory_path, exist_ok=True)
     
     if cfg.if_load_trading_record and cfg.trading_record_path is not None:
@@ -219,20 +219,20 @@ def run(cfg,
                           trading_records,
                           mode)
         
-        assert action in env.action_map.keys(), f"Action {action} is not in the action map {env.action_map.keys()}"
+        # assert action in env.action_map.keys(), f"Action {action} is not in the action map {env.action_map.keys()}"
 
-        action = env.action_map[action]
-        state, reward, done, truncated, info = env.step(action)
+        # action = env.action_map[action]
+        # state, reward, done, truncated, info = env.step(action)
         
-        if trading_records["action"][-1] != info["action"]:
-            trading_records["action"][-1] = info["action"]
+        # if trading_records["action"][-1] != info["action"]:
+        #     trading_records["action"][-1] = info["action"]
             
-        if done:
-            trading_records["total_profit"].append(info["total_profit"])
-            trading_records["total_return"].append(info["total_return"])
-            trading_records["date"].append(info["date"])
-            trading_records["price"].append(info["price"])
-            break
+        # if done:
+        #     trading_records["total_profit"].append(info["total_profit"])
+        #     trading_records["total_return"].append(info["total_return"])
+        #     trading_records["date"].append(info["date"])
+        #     trading_records["price"].append(info["price"])
+        #     break
         
         # Save memories
         memory_save_path = os.path.join(memory_path, f"memory_{str(info['date'])}")
@@ -282,6 +282,60 @@ def run_step(cfg,
                                  exp_path=experiment_path,
                                  save_dir=save_dir,)
     
+    # Past latest market intelligence
+    prepared_latest_market_intelligence_params = prepare_latest_market_intelligence_params(state=state,
+                                                                                           info=info,
+                                                                                           params=params,
+                                                                                           memory=memory,
+                                                                                           provider=provider,
+                                                                                           diverse_query=diverse_query)
+    params.update(prepared_latest_market_intelligence_params)
+    
+    # Past market intelligence
+    pmi_summary_template_path = (cfg.train_past_market_intelligence_summary_template_path 
+                                 if mode == "train" 
+                                 else cfg.valid_past_market_intelligence_summary_template_path)
+    cfg.past_market_intelligence_summary["template_path"] = pmi_summary_template_path
+    pmi_summary = PROMPT.build(cfg.past_market_intelligence_summary)
+    pmi_result = pmi_summary.run(state=state,
+                                 info=info,
+                                 params=params,
+                                 memory=memory,
+                                 provider=provider,
+                                 diverse_query=diverse_query,
+                                 exp_path=experiment_path,
+                                 save_dir=save_dir,)
+    
+    # Low Level Reflection 
+    llr_template_path = (cfg.train_low_level_reflection_template_path 
+                                 if mode == "train" 
+                                 else cfg.valid_low_level_reflection_template_path)
+    cfg.low_level_reflection["template_path"] = llr_template_path
+    low_level_reflection = PROMPT.build(cfg.low_level_reflection)
+    low_level_reflection_result = low_level_reflection.run(state=state,
+                                                           info=info,
+                                                           params=params,
+                                                           memory=memory,
+                                                           provider=provider,
+                                                           diverse_query=diverse_query,
+                                                           exp_path=experiment_path,
+                                                           save_dir=save_dir)
+    
+    # Prepare past low level reflection params
+    prepared_low_level_reflection_params = prepare_low_level_reflection_params(state=state,
+                                                                               info=info,
+                                                                               params=params,
+                                                                               memory=memory,
+                                                                               provider=provider,
+                                                                               diverse_query=diverse_query)
+    params.update(prepared_low_level_reflection_params)
+    
+    # Store low level reflection in memory system
+    low_level_reflection.add_to_memory(state=state,
+                                       info=info,
+                                       res=low_level_reflection_result,
+                                       memory=memory,
+                                       provider=provider)
     # TODO
     # test out lmi results
     # figure out why price and news are not being given to the model

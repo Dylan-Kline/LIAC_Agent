@@ -150,7 +150,7 @@ class LowLevelReflectionPrompt(YamlPrompt):
             "query": response_dict["query"],
         })
 
-        memory.add_memory(type="low_level_reflection",
+        memory.add_memory(memory_type="low_level_reflection",
                           symbol=symbol,
                           data=data,
                           embedding_key="embedding")
