@@ -201,12 +201,11 @@ class TradingEnvironment(gym.Env):
         '''
         state = {}
 
-        days_ago = self.prices.index[self.day - self.look_back_days]
+        days_ago = self.prices.index[max(self.day - self.look_back_days, 0)]
         days_future = self.prices.index[min(self.day + self.look_forward_days, len(self.prices) - 1)]
 
         price = self.prices[self.prices.index <= days_future]
         price = price[price.index >= days_ago]
-
         news = self.news[self.news.index <= days_future]
         news = news[news.index >= days_ago]
 

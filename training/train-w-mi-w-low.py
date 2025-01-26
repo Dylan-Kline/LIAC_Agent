@@ -281,7 +281,6 @@ def run_step(cfg,
                                  diverse_query=diverse_query,
                                  exp_path=experiment_path,
                                  save_dir=save_dir,)
-    print(lmi_result["response_dict"])
     
     # TODO
     # test out lmi results
