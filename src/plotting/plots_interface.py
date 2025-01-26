@@ -49,7 +49,6 @@ class PlotsInterface():
                        title,
                        kline_path,
                        now_date=now_date,
-                       path=os.path.join(kline_dir, f"{info['date']}_{self.suffix}_kline_render.html"),
                        mode=mode)
 
         except Exception as e:
