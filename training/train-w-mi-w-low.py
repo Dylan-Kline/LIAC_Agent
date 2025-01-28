@@ -39,7 +39,7 @@ def parse_args():
 
     parser.add_argument("--checkpoint_start_date", type=str, default=None)
     parser.add_argument("--if_load_memory", action="store_true", default=True)
-    parser.add_argument("--memory_path", type=str, default=None)
+    parser.add_argument("--memory_path", type=str, default="memory")
     parser.add_argument("--if_load_trading_record", action="store_true", default=True)
     parser.add_argument("--trading_record_path", type=str, default=None)
     parser.add_argument("--if_train", action="store_true", default=True)
@@ -119,11 +119,13 @@ def main():
     memory = MEMORY.build(cfg.memory)
     
     # Load local memory
+    print(cfg.memory_path)
     if cfg.if_load_memory and cfg.memory_path is not None:
         print("Loading local memory...")
-        memory_path = os.path.join(cfg.root, cfg.memory_path)
+        memory_path = os.path.join(cfg.root, cfg.workdir, cfg.memory_path)
+        print(memory_path)
         memory.load_local(memory_path=memory_path)
-        
+    exit()
     # Setup diverse query system and strategy agents if need be
     diverse_query = DiverseQuery(memory=memory, 
                                  provider=provider, 
@@ -235,9 +237,7 @@ def run(cfg,
         #     break
         
         # Save memories
-        memory_save_path = os.path.join(memory_path, f"memory_{str(info['date'])}")
-        os.makedirs(memory_save_path, exist_ok=True)
-        memory.save_local(memory_path=memory_save_path)
+        memory.save_local(memory_path=memory_path)
         
         # Save trading records
         save_json(trading_records, os.path.join(trading_records_path, f"trading_records_{str(info['date'])}.json"))

@@ -51,7 +51,7 @@ class MemoryInterface:
         self.tag = tag
         
         # Create the relative memory path
-        self.memory_path = os.path.join(self.root, self.workdir, self.tag, memory_path)
+        self.memory_path = os.path.join(self.root, self.workdir, memory_path)
         os.makedirs(self.memory_path, exist_ok=True)
         
         # Initialize memory stores that will contain memories for each symbol
@@ -311,6 +311,7 @@ class MemoryInterface:
             # Market intelligence loading
             try:
                 path = os.path.join(memory_path, symbol, "market_intelligence")
+                print(path)
                 os.makedirs(path, exist_ok=True)
                 
                 # Load Vector Store

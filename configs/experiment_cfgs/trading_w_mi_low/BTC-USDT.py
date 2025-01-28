@@ -2,6 +2,7 @@ root = None
 selected_asset = "BTC-USDT"
 asset_type = "crypto"
 workdir = "workdir/"
+memory_path = "memory"
 tag = f"{selected_asset}"
 
 initial_amount = 1e5
@@ -87,7 +88,7 @@ memory = dict(
     type="MemoryInterface",
     root=root,
     symbols=None,
-    memory_path="memory",
+    memory_path=memory_path,
     embedding_dim=None,
     max_recent_steps=5,
     workdir=workdir,
