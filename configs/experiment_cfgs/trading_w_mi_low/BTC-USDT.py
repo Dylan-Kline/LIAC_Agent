@@ -10,8 +10,8 @@ transaction_cost_pct = 1.5e-4
 
 # adjust the following parameters mainly
 trader_preference = "moderate_trader"
-train_start_date = "2023-06-10"
-train_end_date = "2024-06-10"
+train_start_date = "2023-07-14"
+train_end_date = "2023-07-16"
 valid_start_date = "2024-06-10"
 valid_end_date = "2024-12-12"
 
