@@ -129,9 +129,9 @@ def prepare_low_level_reflection_params(state: Dict,
 
             # Grab the reasonings for each time horizon (e.g. short, medium, and long term)
             reasoning = reflection["reasoning"]
-            short_term_reasoning = reasoning["short_term"]
-            medium_term_reasoning = reasoning["medium_term"]
-            long_term_reasoning = reasoning["long_term"]
+            short_term_reasoning = reasoning["short_term_reasoning"]
+            medium_term_reasoning = reasoning["medium_term_reasoning"]
+            long_term_reasoning = reasoning["long_term_reasoning"]
 
             # Store all reflections in a corresponding string and append
             reflection_text = f"""Date: {reflection['date']}\n
