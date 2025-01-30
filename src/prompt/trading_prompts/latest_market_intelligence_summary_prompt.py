@@ -167,10 +167,10 @@ class LatestMarketIntelligenceSummaryPrompt(YamlPrompt):
                 "embedding": embedding,
             }
 
-            memory.add_memory(type="market_intelligence",
-                              symbol=symbol,
-                              data=data,
-                              embedding_key="embedding")
+        memory.add_memory(memory_type="market_intelligence",
+                            symbol=symbol,
+                            data=data,
+                            embedding_key="embedding")
             
     def run(self,
             state: Dict,
