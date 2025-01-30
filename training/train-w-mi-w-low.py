@@ -1,7 +1,11 @@
 import argparse
 import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import sys
 from pathlib import Path
+
+import warnings
+warnings.filterwarnings("ignore")
 
 from dotenv import load_dotenv
 load_dotenv(verbose=True)
@@ -38,9 +42,9 @@ def parse_args():
     parser.add_argument("--if_remove", action="store_true", default=False)
 
     parser.add_argument("--checkpoint_start_date", type=str, default=None)
-    parser.add_argument("--if_load_memory", action="store_true", default=True)
+    parser.add_argument("--if_load_memory", action="store_true", default=False)
     parser.add_argument("--memory_path", type=str, default="memory")
-    parser.add_argument("--if_load_trading_record", action="store_true", default=True)
+    parser.add_argument("--if_load_trading_record", action="store_true", default=False)
     parser.add_argument("--trading_record_path", type=str, default=None)
     parser.add_argument("--if_train", action="store_true", default=True)
     parser.add_argument("--if_valid", action="store_true", default=False)
@@ -119,13 +123,12 @@ def main():
     memory = MEMORY.build(cfg.memory)
     
     # Load local memory
-    print(cfg.memory_path)
     if cfg.if_load_memory and cfg.memory_path is not None:
         print("Loading local memory...")
         memory_path = os.path.join(cfg.root, cfg.workdir, cfg.memory_path)
         print(memory_path)
         memory.load_local(memory_path=memory_path)
-    exit()
+    
     # Setup diverse query system and strategy agents if need be
     diverse_query = DiverseQuery(memory=memory, 
                                  provider=provider, 
@@ -221,20 +224,21 @@ def run(cfg,
                           trading_records,
                           mode)
         
-        # assert action in env.action_map.keys(), f"Action {action} is not in the action map {env.action_map.keys()}"
+        assert action in env.action_map.keys(), f"Action {action} is not in the action map {env.action_map.keys()}"
 
-        # action = env.action_map[action]
-        # state, reward, done, truncated, info = env.step(action)
+        action = env.action_map[action]
+        state, reward, done, truncated, info = env.step(action)
         
-        # if trading_records["action"][-1] != info["action"]:
-        #     trading_records["action"][-1] = info["action"]
+        if len(trading_records["action"]) > 0:
+            if trading_records["action"][-1] != info["action"]:
+                trading_records["action"][-1] = info["action"]
             
-        # if done:
-        #     trading_records["total_profit"].append(info["total_profit"])
-        #     trading_records["total_return"].append(info["total_return"])
-        #     trading_records["date"].append(info["date"])
-        #     trading_records["price"].append(info["price"])
-        #     break
+        if done:
+            trading_records["total_profit"].append(info["total_profit"])
+            trading_records["total_return"].append(info["total_return"])
+            trading_records["date"].append(info["date"])
+            trading_records["price"].append(info["price"])
+            break
         
         # Save memories
         memory.save_local(memory_path=memory_path)
@@ -254,6 +258,11 @@ def run_step(cfg,
              experiment_path,
              trading_records,
              mode):
+    
+    # TODO
+    # 1) issues with updating trading records during training
+    # 2) Adjust memory saving heirachy to make the local saving more intuitive
+    #    there is no need to have three seperate saving locations for memory
     
     params = dict()
     save_dir = "train" if mode == "train" else "valid"
@@ -306,6 +315,13 @@ def run_step(cfg,
                                  exp_path=experiment_path,
                                  save_dir=save_dir,)
     
+    # Save latest market intelligence to memory
+    lmi_summary.add_to_memory(state=state,
+                              info=info,
+                              result=lmi_result,
+                              memory=memory,
+                              provider=provider)
+    
     # Low Level Reflection 
     llr_template_path = (cfg.train_low_level_reflection_template_path 
                                  if mode == "train" 
@@ -336,9 +352,36 @@ def run_step(cfg,
                                        res=low_level_reflection_result,
                                        memory=memory,
                                        provider=provider)
-    # TODO
-    # test out lmi results
-    # figure out why price and news are not being given to the model
+    
+    # Grab trader preference
+    if ASSET.check_trader(cfg.trader_preference):
+        trader_preference = {
+            "trader_preference": ASSET.get_trader(cfg.trader_preference)
+        } 
+
+    else:
+        print("Trader preference in config is invalid, default will be used.")
+        trader_preference = {
+            "trader_preference": ASSET.get_trader("moderate_trader")
+        }
+    params.update(trader_preference)
+    
+    # Decision Making
+    decision_template_path = (cfg.train_decision_template_path 
+                              if mode == "train"
+                              else cfg.valid_decision_template_path)
+    cfg.decision["template_path"] = decision_template_path
+    decision_prompt = PROMPT.build(cfg.decision)
+    decision_result = decision_prompt.run(state=state,
+                                            info=info,
+                                            params=params,
+                                            memory=memory,
+                                            provider=provider,
+                                            diverse_query=diverse_query,
+                                            exp_path=experiment_path,
+                                            save_dir=save_dir)
+
+    return params["decision_action"]
 
 if __name__ == "__main__":
     main()
