@@ -77,7 +77,7 @@ class DecisionPrompt(YamlPrompt):
                                                             messages=messages,
                                                             model=model,
                                                             check_keys=check_keys)
-        response["action"] = response["action"].replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "")
+        response["output"]["action"] = response["output"]["action"].replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "")
 
         return response
     
