@@ -337,7 +337,7 @@ class TradingEnvironment(gym.Env):
 
         self.cash -= buy_position * price * (1 + self.transaction_cost_pct)
         self.position += buy_position
-        self.value = self.current_value(price)
+        self.value = self.get_current_value(price)
 
     def sell(self, price, amount=-1):
         '''
@@ -374,7 +374,7 @@ class TradingEnvironment(gym.Env):
 
         self.cash += sell_position * price * (1 - self.transaction_cost_pct)
         self.position -= sell_position
-        self.value = self.current_value(price)
+        self.value = self.get_current_value(price)
 
     def hold_on(self, price, amount=0):
         '''
@@ -395,7 +395,7 @@ class TradingEnvironment(gym.Env):
             - Updates the total portfolio value based on the current position and price.
         '''
         self.action = "HOLD"
-        self.value = self.current_value(price)
+        self.value = self.get_current_value(price)
     
     def step(self, action: int = 0):
         '''
