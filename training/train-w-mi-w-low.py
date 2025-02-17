@@ -47,6 +47,7 @@ def parse_args():
     parser.add_argument("--if_load_trading_record", action="store_true", default=False)
     parser.add_argument("--trading_record_path", type=str, default=None)
     parser.add_argument("--if_train", action="store_true", default=True)
+    parser.add_argument("--no_train", dest="if_train", action="store_false", help="Disable training mode.")
     parser.add_argument("--if_valid", action="store_true", default=False)
 
     args = parser.parse_args()
