@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 from matplotlib.dates import DateFormatter
 import pandas as pd
 import pandas_ta as ta
@@ -56,6 +57,75 @@ def plot_kline(df, title, save_path, now_date, mode="train"):
     plt.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.close()
+
+def plot_trading(data, save_path, now_date=None, width=3.5, opacity=0.8, path=None):
+    # Extract data (using all but the last entry for dates, prices, actions;
+    # returns are shifted by one)
+    print(data)
+    dates = data['date'][:-1]
+    closing_prices = data['price'][:-1]
+    returns = data['total_profit'][1:]
+    actions = data['action'][:-1]
+
+    # Determine y-axis limits based on the closing prices
+    min_y = min(closing_prices)
+    max_y = max(closing_prices)
+    delta = max_y - min_y
+    lowerbound = round(min_y - delta * 0.1, 2)
+    upperbound = round(max_y + delta * 0.1, 2)
+    if delta > 5:
+        lowerbound = int(lowerbound)
+        upperbound = int(upperbound)
+
+    # Create a figure with two vertically stacked subplots.
+    # Height ratios roughly mimic the original 40%/35% split.
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), gridspec_kw={'height_ratios': [4, 3]})
+
+    # --- Plot 1: Adjusted Close Prices ---
+    ax1.plot(dates, closing_prices, linewidth=width, alpha=opacity, label="Adj Close Prices")
+    ax1.set_ylim(lowerbound, upperbound)
+    ax1.set_ylabel("Price")
+    ax1.grid(True)
+
+    # Add markers for BUY and SELL actions
+    # We subtract a little from the price for BUY markers so they appear slightly lower.
+    buy_plotted = False
+    sell_plotted = False
+    for d, p, a in zip(dates, closing_prices, actions):
+        if a == 'BUY':
+            ax1.scatter(d, p - delta * 0.08, s=100, marker='D', color='green', zorder=5,
+                        label='BUY' if not buy_plotted else "")
+            buy_plotted = True
+        elif a == 'SELL':
+            ax1.scatter(d, p, s=150, marker='P', color='red', zorder=5,
+                        label='SELL' if not sell_plotted else "")
+            sell_plotted = True
+
+    # Optionally, mark the "now_date" if provided
+    if now_date is not None and now_date in dates:
+        idx = dates.index(now_date)
+        p_now = closing_prices[idx]
+        ax1.scatter(now_date, p_now, s=120, marker='P', color='grey', zorder=5,
+                    label=f'Now: {now_date}')
+
+    ax1.legend(loc='best')
+    # Rotate x-axis labels for readability
+    plt.setp(ax1.get_xticklabels(), rotation=45, ha='right')
+
+    # --- Plot 2: Cumulative Returns ---
+    ax2.plot(dates, returns, linewidth=width, alpha=opacity, label="Cumulative Returns")
+    ax2.set_ylabel("Cumulative Returns (%)")
+    ax2.grid(True)
+    # Append a percent sign to y-axis tick labels
+    ax2.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f'{x}%'))
+    plt.setp(ax2.get_xticklabels(), rotation=45, ha='right')
+    ax2.legend(loc='best')
+
+    plt.tight_layout()
+    # Save the figure to the specified path
+    plt.savefig(save_path)
+    plt.close(fig)
+
 
 if __name__ == "__main__":
     # Example DataFrame
