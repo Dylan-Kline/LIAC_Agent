@@ -29,7 +29,7 @@ class DiverseQuery():
         
         result = {}
         for query_type in query_types:
-            query_text = QUERY_TYPES[query_type](params)
+            query_text = str(QUERY_TYPES[query_type](params))
             embedding = self.provider.embed_query(query_text)
             query_items, _ = self.memory.query_memory(memory_type=type,
                                                       symbol=symbol,

@@ -310,18 +310,18 @@ class MemoryInterface:
             
             # Market intelligence loading
             try:
-                path = os.path.join(memory_path, symbol, "market_intelligence")
-                print(path)
-                os.makedirs(path, exist_ok=True)
+                mi_path = os.path.join(memory_path, symbol, "market_intelligence")
+                print(mi_path)
+                os.makedirs(mi_path, exist_ok=True)
                 
                 # Load Vector Store
-                vecstore = FaissVectorStore(memory_path=path, embedding_dim=self.embedding_dim)
-                vecstore.load_local(memory_path=path, embedding_dim=self.embedding_dim)
-                print(f"symbols: {symbol}, memory_path: {path}, vecstore length: {vecstore.index.ntotal}")
+                vecstore = FaissVectorStore(memory_path=mi_path, embedding_dim=self.embedding_dim)
+                vecstore.load_local(memory_path=mi_path, embedding_dim=self.embedding_dim)
+                print(f"symbols: {symbol}, memory_path: {mi_path}, vecstore length: {vecstore.index.ntotal}")
                 
                 # Load Memories
                 self.market_intelligence_memories[symbol].load_local(
-                    memory_path=path,
+                    memory_path=mi_path,
                     vectorstore=vecstore,
                 )
             except Exception as e:
@@ -329,17 +329,17 @@ class MemoryInterface:
 
             # Low-level reflection
             try:
-                path = os.path.join(memory_path, symbol, "low_level_reflection")
-                os.makedirs(path, exist_ok=True)
+                llr_path = os.path.join(memory_path, symbol, "low_level_reflection")
+                os.makedirs(llr_path, exist_ok=True)
                 
                 # Load Vector Store
-                vecstore = FaissVectorStore(memory_path=path, embedding_dim=self.embedding_dim)
-                vecstore.load_local(memory_path=path, embedding_dim=self.embedding_dim)
-                print(f"symbols: {symbol}, memory_path: {path}, vecstore length: {vecstore.index.ntotal}")
+                vecstore = FaissVectorStore(memory_path=llr_path, embedding_dim=self.embedding_dim)
+                vecstore.load_local(memory_path=llr_path, embedding_dim=self.embedding_dim)
+                print(f"symbols: {symbol}, memory_path: {llr_path}, vecstore length: {vecstore.index.ntotal}")
                 
                 # Load Memories
                 self.low_level_reflection_memories[symbol].load_local(
-                    memory_path=path,
+                    memory_path=llr_path,
                     vectorstore=vecstore,
                 )
             except Exception as e:
@@ -347,17 +347,17 @@ class MemoryInterface:
 
             # High-level reflection
             try:
-                path = os.path.join(memory_path, symbol, "high_level_reflection")
-                os.makedirs(path, exist_ok=True)
+                hlr_path = os.path.join(memory_path, symbol, "high_level_reflection")
+                os.makedirs(hlr_path, exist_ok=True)
                 
                 # Load Vector Store
-                vecstore = FaissVectorStore(memory_path=path, embedding_dim=self.embedding_dim)
-                vecstore.load_local(memory_path=path, embedding_dim=self.embedding_dim)
-                print(f"symbols: {symbol}, memory_path: {path}, vecstore length: {vecstore.index.ntotal}")
+                vecstore = FaissVectorStore(memory_path=hlr_path, embedding_dim=self.embedding_dim)
+                vecstore.load_local(memory_path=hlr_path, embedding_dim=self.embedding_dim)
+                print(f"symbols: {symbol}, memory_path: {hlr_path}, vecstore length: {vecstore.index.ntotal}")
                 
                 # Load Memories
                 self.high_level_reflection_memories[symbol].load_local(
-                    memory_path=path,
+                    memory_path=hlr_path,
                     vectorstore=vecstore,
                 )
             except Exception as e:
@@ -375,16 +375,16 @@ class MemoryInterface:
 
         for symbol in self.symbols:
             # Save market intelligence memory
-            path = os.path.join(memory_path, symbol, "market_intelligence")
-            os.makedirs(path, exist_ok=True)
-            self.market_intelligence_memories[symbol].save_local(path)
+            mi_path = os.path.join(memory_path, symbol, "market_intelligence")
+            os.makedirs(mi_path, exist_ok=True)
+            self.market_intelligence_memories[symbol].save_local(mi_path)
 
             # Save low-level reflection memory
-            path = os.path.join(memory_path, symbol, "low_level_reflection")
-            os.makedirs(path, exist_ok=True)
-            self.low_level_reflection_memories[symbol].save_local(path)
+            llr_path = os.path.join(memory_path, symbol, "low_level_reflection")
+            os.makedirs(llr_path, exist_ok=True)
+            self.low_level_reflection_memories[symbol].save_local(llr_path)
 
             # Save high-level reflection memory
-            path = os.path.join(memory_path, symbol, "high_level_reflection")
-            os.makedirs(path, exist_ok=True)
-            self.high_level_reflection_memories[symbol].save_local(path)
+            hlr_path = os.path.join(memory_path, symbol, "high_level_reflection")
+            os.makedirs(hlr_path, exist_ok=True)
+            self.high_level_reflection_memories[symbol].save_local(hlr_path)
