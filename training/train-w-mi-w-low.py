@@ -122,11 +122,12 @@ def main():
     cfg.memory["embedding_dim"] = provider.get_embedding_dim()
     memory = MEMORY.build(cfg.memory)
     
+    if cfg.memory_path is not None:
+        memory_path = os.path.join(cfg.root, cfg.workdir, cfg.memory_path)
+    
     # Load local memory
     if cfg.if_load_memory and cfg.memory_path is not None:
         print("Loading local memory...")
-        memory_path = os.path.join(cfg.root, cfg.workdir, cfg.memory_path)
-        print(memory_path)
         memory.load_local(memory_path=memory_path)
     
     # Setup diverse query system and strategy agents if need be
@@ -146,7 +147,7 @@ def main():
                             mode = "train")
         train_save_path = os.path.join(experiment_path, "train_records.json")
 
-        memory.save_local(memory_path=cfg.memory_path)
+        memory.save_local(memory_path=memory_path)
         save_json(train_records, train_save_path)
     
     # Validate
@@ -232,16 +233,16 @@ def run(cfg,
         if len(trading_records["action"]) > 0:
             if trading_records["action"][-1] != info["action"]:
                 trading_records["action"][-1] = info["action"]
-            
+                
+        # Save memories
+        memory.save_local(memory_path=memory_path)
+        
         if done:
             trading_records["total_profit"].append(info["total_profit"])
             trading_records["total_return"].append(info["total_return"])
             trading_records["date"].append(info["date"])
             trading_records["price"].append(info["price"])
             break
-        
-        # Save memories
-        memory.save_local(memory_path=memory_path)
         
         # Save trading records
         save_json(trading_records, os.path.join(trading_records_path, f"trading_records_{str(info['date'])}.json"))
@@ -261,8 +262,6 @@ def run_step(cfg,
     
     # TODO
     # 1) issues with updating trading records during training
-    # 2) Adjust memory saving heirachy to make the local saving more intuitive
-    #    there is no need to have three seperate saving locations for memory
     
     params = dict()
     save_dir = "train" if mode == "train" else "valid"
@@ -353,12 +352,22 @@ def run_step(cfg,
                                        memory=memory,
                                        provider=provider)
     
+    # Plot trading chart
+    #if len(trading_records["date"]) <= 0:
+    trading_path = None
+    # else:
+    #     trading_path = plots.plot_trading(records=trading_records,
+    #                                       info=info,
+    #                                       save_dir=save_dir)
+    params.update({
+        "trading_path": trading_path
+    })
+    
     # Grab trader preference
     if ASSET.check_trader(cfg.trader_preference):
         trader_preference = {
             "trader_preference": ASSET.get_trader(cfg.trader_preference)
         } 
-
     else:
         print("Trader preference in config is invalid, default will be used.")
         trader_preference = {
@@ -381,6 +390,23 @@ def run_step(cfg,
                                             exp_path=experiment_path,
                                             save_dir=save_dir)
 
+    # add records
+    trading_records["symbol"].append(info["symbol"])
+    trading_records["day"].append(info["day"])
+    trading_records["value"].append(info["value"])
+    trading_records["cash"].append(info["cash"])
+    trading_records["position"].append(info["position"])
+    trading_records["ret"].append(info["ret"])
+    trading_records["date"].append(info["date"])
+    trading_records["price"].append(info["price"])
+    trading_records["discount"].append(info["discount"])
+    trading_records["kline_path"].append(kline_path)
+    trading_records["trading_path"].append(trading_path)
+    trading_records["total_profit"].append(info["total_profit"])
+    trading_records["total_return"].append(info["total_return"])
+    trading_records["action"].append(decision_result["response_dict"]["action"])
+    trading_records["reasoning"].append(decision_result["response_dict"]["reasoning"])
+    
     return params["decision_action"]
 
 if __name__ == "__main__":
