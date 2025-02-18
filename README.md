@@ -48,12 +48,32 @@ dataset = dict(
 1. To run the agent in training mode use the following command in the terminal:
 
 ```
-python3 training/train-w-mi-w-low.py
+python training/train-w-mi-w-low.py
 ```
 
 2. To run the agent in validation mode aka backtesting (still has some changes that need to be made), use the following:
 
 ```
-python3 training/train-w-mi-w-low.py --no_train --if_valid
+python training/train-w-mi-w-low.py --no_train --if_valid
 ```
+
+## Summary of the overall architecture 
+
+### Config Files 
+These are the main way to set up the program to run and train on specific dates.
+
+#### Running experiments
+
+**Make sure to keep the workdir as "workdir/"** 
+Changing this value would cause issues with how the current structure is set up.
+
+You can also run seperate experiments through using the existing *BTC-USDT.py* config file or creating a new config file in the *configs/experiment_cfgs/trading_w_mi_low* folder by copy pasting the *BTC-USDT.py* file and updating the information that you wish to change such as dates to train on, trader preferences, etc. Keep in mind that you should change the *tag* in the config file to seperate your experiments into different folders.
+
+### Workdir aka experiments folder
+
+Within the *workdir* folder you should see your experiments that you have run. Within each you can view the trading records to view how to the model has performed. Though, within the train_records.json file you can see the full summary of the trading history of the agent throughout the trading period you defined.
+
+### Data Analysis of Trading Records
+
+If you wish to see what the sharpe ratio, annualized return rate, etc. for the training or trading records, you can use the *metric* functions found in the *LIAC_AGENT/src/metrics/metrics.py* file. Read the json file using the json library, perhaps convert it to a pandas dataframe and then play around with the metrics functions to see key information about the trading records.
 
