@@ -1,25 +1,35 @@
+# Future improvements
 ☐ Look into if using a more intelligent model to evaluate reflections made by chatgpt 4o could improve performance. (Such as using o3-mini or a local deepseek)
+- look into position sizing and fractional positions
 
+# Handle all states of a portfolio or asset position for evaluation
 ☐ (this can be done be manipulating the cash value provided to the model) Implement a prompt asking the model to consider a scenario where they are holding the asset and where they are not holding the asset. 
     ☐  Update the structured YAML output format to have two diffrent keys "holding" and "not_holding", each with their separate reasoning and action.
 
+# Website set up
 ☐ Create a basic website to showcase the model on bitcoin
     ☐ Implement a simple fastapi endpoint for the javascript to call
         ☐ Create an API key requirement so it can only be called using a .env file
-        
-☐ set up production data pipeline
-☐ Create a script to run the agent on a specific asset such as BTCUSD
+
+# Production prep
+- Change trading records to keep updating the same file as it runs through rather than creating a new one each time.
+☐ set up production data pipeline for real time market news and prices
+☐ Create a script to schedule a daily run of the agent on a specific asset such as BTCUSD 
 ☐ Create a fastapi function that uses an API key to then call a function that grabs the latest action and reasoning the agents memory for the specific asset type
     ☐ Or perhaps have the function grab all of the latest reasoning and actions for each supported cryptocurrency and return as dict
     
+# Set up production and test databases to store memories and reasoning/actions
+
 # Market Information
 Consider using other technical indicators as tools to provide the model with more information.
 - use a science hypothesis testing method to choose the best technical indicators to use for the highest winrate.
 - allow users to provide their own technical indicators later on
 
-Add a market regime predictor and hidden markov model to determine the regimes and their probability of transitioning into another regime.
-
 Consider adding order flow and market depth information to the tools part of the model. Add expert guidance as well in the tools for the agent. 
+
+
+# Market Regime Prediction
+Add a market regime predictor and hidden markov model to determine the regimes and their probability of transitioning into another regime.
 
 # Position Sizing
 - Add support for teaching the agent to position size to maximize returns while minimizing loss

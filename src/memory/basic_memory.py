@@ -131,7 +131,7 @@ class MemoryUnit(BaseMemory):
 
         with open(os.path.join(memory_path, "memory.json"), "r") as rf:
             memory = json.load(rf)
-        print(memory)
+    
         self.memory_path = memory_path
         self.vectorstore = vectorstore
         self.memory = memory
