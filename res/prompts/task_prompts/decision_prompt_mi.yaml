@@ -15,3 +15,7 @@ prompt:
         "action": Based on the above information and your analysis. Please strictly follow the following constraints and output formats:
         1.You can only output one of BUY, HOLD and SELL.
         2.The above information may be in the opposite direction of decision-making (e.g., BUY or SELL), but you should consider step-by-step all of the above information together to give an exact BUY or SELL decision result.
+
+        "stop": Based on the current market conditions and your position information, please provide a stop loss that minimizes risk based on the trader preference.
+        1. You should strictly output a float value for this stop value.
+        2. The stop loss value could be a trailing value to lock in profits, or a value to minimize loss.

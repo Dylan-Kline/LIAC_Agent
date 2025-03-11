@@ -106,6 +106,8 @@ class DecisionPrompt(YamlPrompt):
         response = response['output']
         action = response["action"]
         reasoning = response["reasoning"]
+        stop_loss = response["stop"]
+        stop_loss = float(stop_loss)
         
         result = {
             "params": task_params,
@@ -118,6 +120,7 @@ class DecisionPrompt(YamlPrompt):
         params.update({
             "decision_action": action,
             "decision_reasoning": reasoning,
+            "decision_stop_loss": stop_loss,
         })
         
         print("<" * 50 + f"{info['date']} - Finish Running Decision Prompt" + "<" * 50)

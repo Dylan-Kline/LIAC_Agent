@@ -6,4 +6,5 @@ output_format:
       analysis: "Analysis that you provided."
       action: "BUY"
       reasoning: "Reasoning about the decision result that you provided."
+      stop: "Stop loss value for minimizing risk."
     ```

@@ -261,9 +261,6 @@ def run_step(cfg,
              trading_records,
              mode):
     
-    # TODO
-    # 1) issues with updating trading records during training
-    
     params = dict()
     save_dir = "train" if mode == "train" else "valid"
     
@@ -407,6 +404,7 @@ def run_step(cfg,
     trading_records["total_return"].append(info["total_return"])
     trading_records["action"].append(decision_result["response_dict"]["action"])
     trading_records["reasoning"].append(decision_result["response_dict"]["reasoning"])
+    trading_records["stop_loss"].append(decision_result["response_dict"]["stop"])
     
     return params["decision_action"]
 
