@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 import argparse
 import multiprocessing
@@ -18,8 +19,8 @@ class CryptoDownloaderProcess(multiprocessing.Process):
         self.downloader.download(self.cryptos)
         
 def main():
-    workdir = "workdir"
-    tag = "fmp_news_exp_cryptos"
+    workdir = "datasets/exp_cryptos/news"
+    tag = ""
     batch_size = 1
 
     type = "FMPCryptoNewsDownloader"
@@ -28,7 +29,14 @@ def main():
     end_date = "2025-01-03"
     interval = "1d"
     delay = 1
-    cryptos_path = "configs/_asset_lists_/cryptos.txt"
+    cryptos_path = "configs/_asset_lists_/exp_cryptos.txt"
+
+    # Create process manager
+    manager = multiprocessing.Manager()
+    shared_rate_limit = manager.Value('num_requests', 0)
+    shared_namespace = manager.Namespace()
+    shared_namespace.value = datetime.now()
+    shared_lock = manager.Lock()
     
     downloader = FMPCryptoNewsFetcher(
         root = root,
@@ -40,6 +48,9 @@ def main():
         cryptos_path=cryptos_path,
         workdir=workdir,
         tag=tag,
+        shared_lock=shared_lock,
+        shared_counter=shared_rate_limit,
+        shared_start_time=shared_namespace
     )
 
     print(f"| Check Downloading {tag}...")
